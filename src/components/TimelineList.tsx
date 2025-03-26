@@ -1,38 +1,19 @@
 'use client'
 
-import { TimelineEvent, TimelineStatus } from '../types/timeline'
+import { TimelineEvent } from '../types/timeline'
 
 interface TimelineListProps {
   events: TimelineEvent[]
   onEdit: (event: TimelineEvent) => void
   onDelete: (id: string) => void
-  onStatusChange: (id: string, status: TimelineStatus) => void
 }
 
-const STATUS_COLORS = {
-  'Not Started': 'bg-gray-100 text-gray-800',
-  'In Progress': 'bg-blue-100 text-blue-800',
-  Completed: 'bg-green-100 text-green-800',
-  Overdue: 'bg-red-100 text-red-800',
-}
-
-const PRIORITY_COLORS = {
-  Low: 'bg-gray-100 text-gray-800',
-  Medium: 'bg-yellow-100 text-yellow-800',
-  High: 'bg-red-100 text-red-800',
-}
-
-export function TimelineList({
-  events,
-  onEdit,
-  onDelete,
-  onStatusChange,
-}: TimelineListProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+export function TimelineList({ events, onEdit, onDelete }: TimelineListProps) {
+  const formatTime = (time: string) => {
+    return new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
     })
   }
 
@@ -45,16 +26,13 @@ export function TimelineList({
               Event
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Category
+              Time
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Due Date
+              Location
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Priority
+              Vendor
             </th>
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
@@ -74,37 +52,24 @@ export function TimelineList({
                   </div>
                 )}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-accent/20 text-gray-800">
-                  {event.category}
-                </span>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {formatTime(event.start_time)}
+                {event.end_time && ` - ${formatTime(event.end_time)}`}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {formatDate(event.dueDate)}
+                {event.location}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <select
-                  value={event.status}
-                  onChange={(e) =>
-                    onStatusChange(event.id, e.target.value as TimelineStatus)
-                  }
-                  className={`text-xs font-medium rounded-full px-2.5 py-0.5 ${
-                    STATUS_COLORS[event.status]
-                  }`}>
-                  {Object.keys(STATUS_COLORS).map((status) => (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    PRIORITY_COLORS[event.priority]
-                  }`}>
-                  {event.priority}
-                </span>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {event.vendor_name && (
+                  <div>
+                    {event.vendor_name}
+                    {event.vendor_contact && (
+                      <div className="text-xs text-gray-400">
+                        {event.vendor_contact}
+                      </div>
+                    )}
+                  </div>
+                )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div className="flex justify-end gap-2">

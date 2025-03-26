@@ -17,6 +17,16 @@
   --accent-dark: #7c3aed;
   --accent-light: #a78bfa;
   --background: #f8fafc;
+  --earth-50: #faf6f2;
+  --earth-100: #f5ede4;
+  --earth-200: #ebdac9;
+  --earth-300: #e0c7ae;
+  --earth-400: #d5b493;
+  --earth-500: #caa178;
+  --earth-600: #bf8e5d;
+  --earth-700: #b47b42;
+  --earth-800: #a96827;
+  --earth-900: #9e550c;
 }
 
 @layer base {
@@ -72,7 +82,7 @@
   }
 
   .card {
-    @apply bg-surface p-6 rounded-lg shadow-sm border border-earth-300;
+    @apply bg-white p-6 rounded-lg shadow-sm border border-earth-300;
   }
 
   .badge {

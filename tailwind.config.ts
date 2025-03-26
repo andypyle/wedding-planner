@@ -26,6 +26,18 @@ const config: Config = {
           light: 'var(--accent-light)',
         },
         background: 'var(--background)',
+        earth: {
+          50: '#faf6f2',
+          100: '#f5ede4',
+          200: '#ebdac9',
+          300: '#e0c7ae',
+          400: '#d5b493',
+          500: '#caa178',
+          600: '#bf8e5d',
+          700: '#b47b42',
+          800: '#a96827',
+          900: '#9e550c',
+        },
       },
       fontFamily: {
         sans: ['DM Sans', 'sans-serif'],

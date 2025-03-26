@@ -1,9 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { Settings } from '@/types/settings'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const supabase = createClient()
+  const router = useRouter()
+
+  const [settings, setSettings] = useState<Settings>({
+    id: '',
+    user_id: '',
     notifications: {
       email: true,
       sms: false,
@@ -19,7 +31,59 @@ export default function SettingsPage() {
     },
     language: 'english',
     timezone: 'America/New_York',
+    created_at: '',
+    updated_at: '',
   })
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) {
+          router.push('/login')
+          return
+        }
+
+        const { data, error } = await supabase
+          .from('settings')
+          .select('*')
+          .eq('user_id', userData.user.id)
+          .single()
+
+        if (error) {
+          if (error.code === 'PGRST116') {
+            // No settings found, create default settings
+            const { data: newSettings, error: insertError } = await supabase
+              .from('settings')
+              .insert({
+                user_id: userData.user.id,
+                notifications: settings.notifications,
+                privacy: settings.privacy,
+                display: settings.display,
+                language: settings.language,
+                timezone: settings.timezone,
+              })
+              .select()
+              .single()
+
+            if (insertError) throw insertError
+            setSettings(newSettings)
+          } else {
+            throw error
+          }
+        } else {
+          setSettings(data)
+        }
+      } catch (err) {
+        console.error('Error loading settings:', err)
+        setError('Failed to load settings')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSettings()
+  }, [router])
 
   const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target
@@ -62,6 +126,48 @@ export default function SettingsPage() {
     })
   }
 
+  const handleSave = async () => {
+    setSaving(true)
+    setError(null)
+    setSuccess(false)
+
+    try {
+      const { data: userData } = await supabase.auth.getUser()
+      if (!userData.user) {
+        router.push('/login')
+        return
+      }
+
+      const { error: updateError } = await supabase
+        .from('settings')
+        .update({
+          notifications: settings.notifications,
+          privacy: settings.privacy,
+          display: settings.display,
+          language: settings.language,
+          timezone: settings.timezone,
+        })
+        .eq('user_id', userData.user.id)
+
+      if (updateError) throw updateError
+
+      setSuccess(true)
+    } catch (err) {
+      console.error('Error saving settings:', err)
+      setError('Failed to save settings')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       <div>
@@ -70,6 +176,18 @@ export default function SettingsPage() {
           Manage your account settings and preferences
         </p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          Settings saved successfully!
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="card">
@@ -234,7 +352,12 @@ export default function SettingsPage() {
         </div>
 
         <div className="mt-6">
-          <button className="btn-primary">Save Settings</button>
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="btn-primary disabled:opacity-70">
+            {saving ? 'Saving...' : 'Save Settings'}
+          </button>
         </div>
       </div>
     </div>

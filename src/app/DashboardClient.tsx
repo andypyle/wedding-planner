@@ -1,13 +1,27 @@
 'use client'
 
+import { createClient } from '@/lib/supabase/client'
 import { Guest } from '@/types/guest'
 import { Vendor } from '@/types/vendor'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 interface DashboardClientProps {
   vendors: Vendor[]
   guests: Guest[]
   daysUntilWedding: number | null
+}
+
+interface ChecklistStats {
+  total: number
+  completed: number
+  upcoming: number
+  categories: {
+    [key: string]: {
+      total: number
+      completed: number
+    }
+  }
 }
 
 const QuickStats = ({
@@ -136,14 +150,12 @@ interface GuestOverviewProps {
 const GuestOverview = ({ guests }: GuestOverviewProps) => {
   const totalGuests = guests.length
   const confirmedGuests = guests.filter(
-    (g) => g.rsvp_status === 'Confirmed'
+    (g) => g.rsvp_status === 'attending'
   ).length
   const declinedGuests = guests.filter(
-    (g) => g.rsvp_status === 'Declined'
+    (g) => g.rsvp_status === 'not_attending'
   ).length
-  const pendingGuests = guests.filter(
-    (g) => g.rsvp_status === 'Not Sent' || g.rsvp_status === 'Invited'
-  ).length
+  const pendingGuests = guests.filter((g) => g.rsvp_status === 'pending').length
 
   const rsvpPercentage =
     totalGuests > 0
@@ -196,6 +208,125 @@ const GuestOverview = ({ guests }: GuestOverviewProps) => {
         </div>
         <p className="text-sm text-earth-600 mt-2">
           {rsvpPercentage}% of guests have responded
+        </p>
+      </div>
+    </div>
+  )
+}
+
+const ChecklistOverview = () => {
+  const [stats, setStats] = useState<ChecklistStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    fetchChecklistStats()
+  }, [])
+
+  const fetchChecklistStats = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('checklist_items')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      const stats: ChecklistStats = {
+        total: data?.length || 0,
+        completed: data?.filter((item) => item.completed).length || 0,
+        upcoming:
+          data?.filter(
+            (item) =>
+              !item.completed &&
+              item.due_date &&
+              new Date(item.due_date) > new Date()
+          ).length || 0,
+        categories: {},
+      }
+
+      data?.forEach((item) => {
+        if (!stats.categories[item.category]) {
+          stats.categories[item.category] = {
+            total: 0,
+            completed: 0,
+          }
+        }
+        stats.categories[item.category].total++
+        if (item.completed) {
+          stats.categories[item.category].completed++
+        }
+      })
+
+      setStats(stats)
+    } catch (err) {
+      console.error('Error fetching checklist stats:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+        <div className="px-4 py-5 sm:p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-earth-200 rounded w-1/4"></div>
+            <div className="space-y-2">
+              <div className="h-4 bg-earth-200 rounded"></div>
+              <div className="h-4 bg-earth-200 rounded w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+      <div className="px-4 py-5 sm:p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium text-earth-800">
+            Checklist Progress
+          </h3>
+          <Link
+            href="/checklist"
+            className="text-sm text-primary hover:text-primary/80">
+            View All →
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
+          <div>
+            <dt className="text-sm font-medium text-earth-600">Total Tasks</dt>
+            <dd className="mt-1 text-2xl font-semibold text-earth-800">
+              {stats?.total || 0}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-earth-600">Completed</dt>
+            <dd className="mt-1 text-2xl font-semibold text-green-600">
+              {stats?.completed || 0}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm font-medium text-earth-600">Upcoming</dt>
+            <dd className="mt-1 text-2xl font-semibold text-yellow-600">
+              {stats?.upcoming || 0}
+            </dd>
+          </div>
+        </div>
+
+        <div className="w-full bg-earth-200 rounded-full h-2.5">
+          <div
+            className="bg-primary h-2.5 rounded-full"
+            style={{
+              width: `${stats ? (stats.completed / stats.total) * 100 : 0}%`,
+            }}></div>
+        </div>
+        <p className="text-sm text-earth-600 mt-2">
+          {stats ? Math.round((stats.completed / stats.total) * 100) : 0}% of
+          tasks completed
         </p>
       </div>
     </div>
@@ -285,6 +416,8 @@ export function DashboardClient({
         <BudgetOverview vendors={vendors} />
         <GuestOverview guests={guests} />
       </div>
+
+      <ChecklistOverview />
 
       <div>
         <h2 className="text-lg font-medium text-earth-800 mb-4">

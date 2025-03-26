@@ -1,53 +1,60 @@
 'use client'
 
-import { useState } from 'react'
-import { TimelineForm } from '../../components/TimelineForm'
-import { TimelineList } from '../../components/TimelineList'
-import { TimelineProgress } from '../../components/TimelineProgress'
-import { useTimeline } from '../../hooks/useTimeline'
-import { TimelineEvent, TimelineStatus } from '../../types/timeline'
+import { Modal } from '@/components/Modal'
+import TimelineEventForm from '@/components/TimelineEventForm'
+import { createClient } from '@/lib/supabase/client'
+import { TimelineEvent } from '@/types/timeline'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-const TIME_PERIODS = [
-  { label: 'All', value: 'all' },
-  { label: 'Upcoming (30 days)', value: 'upcoming' },
-  { label: 'Overdue', value: 'overdue' },
-]
-
-const STATUSES: TimelineStatus[] = [
-  'Not Started',
-  'In Progress',
-  'Completed',
-  'Overdue',
-]
+type OperationType = 'create' | 'update' | 'delete'
 
 export default function TimelinePage() {
-  const {
-    events,
-    addEvent,
-    updateEvent,
-    deleteEvent,
-    updateStatus,
-    getUpcomingEvents,
-    getOverdueEvents,
-    getProgress,
-    canComplete,
-  } = useTimeline()
-
+  const [events, setEvents] = useState<TimelineEvent[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
+  const [operationType, setOperationType] = useState<OperationType | null>(null)
   const [showForm, setShowForm] = useState(false)
-  const [editingEvent, setEditingEvent] = useState<TimelineEvent | undefined>()
-  const [selectedPeriod, setSelectedPeriod] = useState('all')
-  const [selectedStatus, setSelectedStatus] = useState<TimelineStatus | 'All'>(
-    'All'
-  )
+  const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
+  const supabase = createClient()
+  const router = useRouter()
 
-  const handleSubmit = (eventData: Omit<TimelineEvent, 'id'>) => {
-    if (editingEvent) {
-      updateEvent(editingEvent.id, eventData)
-    } else {
-      addEvent(eventData)
+  useEffect(() => {
+    const initializePage = async () => {
+      try {
+        const { data: userData } = await supabase.auth.getUser()
+        if (!userData.user) {
+          router.push('/login')
+          return
+        }
+        setUserId(userData.user.id)
+        fetchEvents()
+      } catch (err) {
+        console.error('Error checking authentication:', err)
+        router.push('/login')
+      }
     }
-    setShowForm(false)
-    setEditingEvent(undefined)
+
+    initializePage()
+  }, [router])
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('timeline_events')
+        .select('*')
+        .order('start_time', { ascending: true })
+
+      if (error) throw error
+      setEvents(data || [])
+    } catch (err) {
+      console.error('Error fetching events:', err)
+      setError('Failed to load timeline events')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleEdit = (event: TimelineEvent) => {
@@ -55,122 +62,245 @@ export default function TimelinePage() {
     setShowForm(true)
   }
 
-  const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to remove this event?')) {
-      deleteEvent(id)
+  const handleSubmit = async (formData: {
+    title: string
+    description: string
+    start_time: string
+    end_time: string
+    location: string
+    vendor_name: string
+    vendor_contact: string
+    notes: string
+  }) => {
+    setLoading(true)
+    setError(null)
+    setSuccess(false)
+
+    try {
+      if (!userId) {
+        throw new Error('User not authenticated')
+      }
+
+      if (editingEvent) {
+        setOperationType('update')
+        const { error: updateError } = await supabase
+          .from('timeline_events')
+          .update({
+            ...formData,
+            end_time: formData.end_time || null,
+          })
+          .eq('id', editingEvent.id)
+
+        if (updateError) throw updateError
+      } else {
+        setOperationType('create')
+        const { error: insertError } = await supabase
+          .from('timeline_events')
+          .insert([
+            {
+              ...formData,
+              end_time: formData.end_time || null,
+              user_id: userId,
+            },
+          ])
+
+        if (insertError) throw insertError
+      }
+
+      setSuccess(true)
+      setShowForm(false)
+      setEditingEvent(null)
+      router.refresh()
+      fetchEvents()
+    } catch (err) {
+      console.error('Error saving event:', err)
+      setError(
+        editingEvent ? 'Failed to update event' : 'Failed to create event'
+      )
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleStatusChange = (id: string, status: TimelineStatus) => {
-    if (status === 'Completed' && !canComplete(id)) {
-      alert('Cannot complete this event until its dependencies are completed.')
-      return
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this event?')) return
+
+    setLoading(true)
+    setError(null)
+    setSuccess(false)
+    setOperationType('delete')
+
+    try {
+      const { error: deleteError } = await supabase
+        .from('timeline_events')
+        .delete()
+        .eq('id', id)
+
+      if (deleteError) throw deleteError
+
+      setSuccess(true)
+      router.refresh()
+      fetchEvents()
+    } catch (err) {
+      console.error('Error deleting event:', err)
+      setError('Failed to delete event')
+    } finally {
+      setLoading(false)
     }
-    updateStatus(id, status)
   }
 
-  const filteredEvents = (() => {
-    let filtered = events
+  const handleCancel = () => {
+    setShowForm(false)
+    setEditingEvent(null)
+    setOperationType(null)
+  }
 
-    // Filter by time period
-    if (selectedPeriod === 'upcoming') {
-      filtered = getUpcomingEvents()
-    } else if (selectedPeriod === 'overdue') {
-      filtered = getOverdueEvents()
-    }
+  const formatTime = (time: string) => {
+    return new Date(`2000-01-01T${time}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+  }
 
-    // Filter by status
-    if (selectedStatus !== 'All') {
-      filtered = filtered.filter((event) => event.status === selectedStatus)
-    }
-
-    // Sort by due date
-    return filtered.sort(
-      (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     )
-  })()
+  }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg">
-      <div className="px-4 py-5 sm:p-6">
-        <div className="sm:flex sm:items-center">
-          <div className="sm:flex-auto">
-            <h1 className="text-2xl font-semibold text-gray-900">Timeline</h1>
-            <TimelineProgress progress={getProgress()} />
-          </div>
-          <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-            <button
-              onClick={() => {
-                setEditingEvent(undefined)
-                setShowForm(true)
-              }}
-              className="btn-primary">
-              Add Event
-            </button>
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-semibold text-earth-800">
+            Day-of Timeline
+          </h1>
+          <p className="mt-1 text-sm text-earth-600">
+            Plan and manage your wedding day schedule
+          </p>
         </div>
-
-        <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
-          <select
-            className="input max-w-xs"
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}>
-            {TIME_PERIODS.map((period) => (
-              <option key={period.value} value={period.value}>
-                {period.label}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className="input max-w-xs"
-            value={selectedStatus}
-            onChange={(e) =>
-              setSelectedStatus(e.target.value as TimelineStatus | 'All')
-            }>
-            <option value="All">All Statuses</option>
-            {STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="mt-6">
-          <TimelineList
-            events={filteredEvents}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-            onStatusChange={handleStatusChange}
-          />
-
-          {filteredEvents.length === 0 && (
-            <p className="text-center text-gray-500 py-8">
-              No events found. Click &quot;Add Event&quot; to get started!
-            </p>
-          )}
-        </div>
+        <button
+          onClick={() => {
+            setEditingEvent(null)
+            setShowForm(true)
+          }}
+          className="btn-primary">
+          Add Event
+        </button>
       </div>
 
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-semibold mb-4">
-              {editingEvent ? 'Edit Event' : 'Add New Event'}
-            </h2>
-            <TimelineForm
-              event={editingEvent}
-              events={events}
-              onSubmit={handleSubmit}
-              onCancel={() => {
-                setShowForm(false)
-                setEditingEvent(undefined)
-              }}
-            />
-          </div>
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
         </div>
       )}
+
+      {success && (
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+          {operationType === 'update'
+            ? 'Event updated successfully!'
+            : operationType === 'create'
+            ? 'Event created successfully!'
+            : 'Event deleted successfully!'}
+        </div>
+      )}
+
+      <Modal
+        isOpen={showForm}
+        onClose={handleCancel}
+        title={editingEvent ? 'Edit Event' : 'Add Event'}>
+        <TimelineEventForm
+          event={editingEvent || undefined}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
+          loading={loading}
+        />
+      </Modal>
+
+      <div className="space-y-4">
+        {events.map((event) => (
+          <div key={event.id} className="card">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-lg font-medium text-earth-800">
+                  {event.title}
+                </h3>
+                <p className="text-sm text-earth-600">
+                  {formatTime(event.start_time)}
+                  {event.end_time && ` - ${formatTime(event.end_time)}`}
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleEdit(event)}
+                  className="text-primary hover:text-primary-dark">
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(event.id)}
+                  className="text-red-600 hover:text-red-800">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            {event.description && (
+              <p className="mt-2 text-earth-700">{event.description}</p>
+            )}
+
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {event.location && (
+                <div>
+                  <h4 className="text-sm font-medium text-earth-600">
+                    Location
+                  </h4>
+                  <p className="mt-1 text-earth-700">{event.location}</p>
+                </div>
+              )}
+
+              {event.vendor_name && (
+                <div>
+                  <h4 className="text-sm font-medium text-earth-600">Vendor</h4>
+                  <p className="mt-1 text-earth-700">{event.vendor_name}</p>
+                </div>
+              )}
+
+              {event.vendor_contact && (
+                <div>
+                  <h4 className="text-sm font-medium text-earth-600">
+                    Vendor Contact
+                  </h4>
+                  <p className="mt-1 text-earth-700">{event.vendor_contact}</p>
+                </div>
+              )}
+
+              {event.notes && (
+                <div className="md:col-span-2">
+                  <h4 className="text-sm font-medium text-earth-600">Notes</h4>
+                  <p className="mt-1 text-earth-700">{event.notes}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {events.length === 0 && !showForm && (
+          <div className="card text-center py-8">
+            <p className="text-earth-600">No events added yet.</p>
+            <button
+              onClick={() => {
+                setEditingEvent(null)
+                setShowForm(true)
+              }}
+              className="mt-4 text-primary hover:text-primary-dark">
+              Add your first event
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

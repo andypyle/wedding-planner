@@ -14,16 +14,19 @@ export type TimelineCategory =
   | 'Reception'
   | 'Other'
 
+export type Priority = 'Low' | 'Medium' | 'High'
+
 export interface TimelineEvent {
   id: string
   title: string
-  description?: string
-  category: TimelineCategory
-  status: TimelineStatus
-  dueDate: string
-  completedDate?: string
-  assignedTo?: string[]
-  notes?: string
-  priority: 'Low' | 'Medium' | 'High'
-  dependencies?: string[] // IDs of events that must be completed before this one
+  description: string
+  start_time: string
+  end_time: string | null
+  location: string | null
+  vendor_name: string | null
+  vendor_contact: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+  user_id: string
 }

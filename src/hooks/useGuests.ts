@@ -43,7 +43,7 @@ export function useGuests() {
   }
 
   const getGuestsByGroup = (groupName: string) => {
-    return guests.filter((guest) => guest.group_name === groupName)
+    return guests.filter((guest) => guest.group === groupName)
   }
 
   const getTotalGuests = () => {
@@ -52,8 +52,8 @@ export function useGuests() {
 
   const getConfirmedGuests = () => {
     return (
-      getGuestsByStatus('Confirmed').length +
-      getGuestsByStatus('Confirmed').filter((guest) => guest.plus_one).length
+      getGuestsByStatus('attending').length +
+      getGuestsByStatus('attending').filter((guest) => guest.plus_one).length
     )
   }
 

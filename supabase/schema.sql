@@ -6,6 +6,19 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE SCHEMA IF NOT EXISTS auth;
 CREATE SCHEMA IF NOT EXISTS public;
 
+-- Settings Table
+CREATE TABLE IF NOT EXISTS public.settings (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  notifications JSONB NOT NULL DEFAULT '{"email": true, "sms": false, "pushNotifications": true}',
+  privacy JSONB NOT NULL DEFAULT '{"shareWithVendors": true, "publicProfile": false}',
+  display JSONB NOT NULL DEFAULT '{"darkMode": false, "highContrast": false}',
+  language TEXT NOT NULL DEFAULT 'english',
+  timezone TEXT NOT NULL DEFAULT 'America/New_York',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+);
+
 -- Vendors Table
 CREATE TABLE IF NOT EXISTS public.vendors (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -143,6 +156,19 @@ CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE 
   USING (auth.uid() = id);
 
+-- Settings policies
+CREATE POLICY "Users can view their own settings" 
+  ON public.settings FOR SELECT 
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create their own settings" 
+  ON public.settings FOR INSERT 
+  WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update their own settings" 
+  ON public.settings FOR UPDATE 
+  USING (auth.uid() = user_id);
+
 -- Create functions for handling timestamps
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
 RETURNS TRIGGER AS $$
@@ -170,5 +196,11 @@ EXECUTE FUNCTION public.handle_updated_at();
 
 CREATE TRIGGER handle_profiles_updated_at
 BEFORE UPDATE ON public.profiles
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_updated_at();
+
+-- Create trigger for settings updated_at
+CREATE TRIGGER handle_settings_updated_at
+BEFORE UPDATE ON public.settings
 FOR EACH ROW
 EXECUTE FUNCTION public.handle_updated_at(); 

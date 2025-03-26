@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Guest } from '../types/guest'
+import { Guest, GuestStatus } from '../types/guest'
 
 // In a real app, this would be replaced with API calls
 const STORAGE_KEY = 'wedding-guests'
@@ -38,22 +38,22 @@ export function useGuests() {
     setGuests((prev) => prev.filter((guest) => guest.id !== id))
   }
 
-  const getGuestsByStatus = (status: Guest['status']) => {
-    return guests.filter((guest) => guest.status === status)
+  const getGuestsByStatus = (status: GuestStatus) => {
+    return guests.filter((guest) => guest.rsvp_status === status)
   }
 
-  const getGuestsByGroup = (group: string) => {
-    return guests.filter((guest) => guest.group === group)
+  const getGuestsByGroup = (groupName: string) => {
+    return guests.filter((guest) => guest.group_name === groupName)
   }
 
   const getTotalGuests = () => {
-    return guests.length + guests.filter((guest) => guest.plusOne).length
+    return guests.length + guests.filter((guest) => guest.plus_one).length
   }
 
   const getConfirmedGuests = () => {
     return (
       getGuestsByStatus('Confirmed').length +
-      getGuestsByStatus('Confirmed').filter((guest) => guest.plusOne).length
+      getGuestsByStatus('Confirmed').filter((guest) => guest.plus_one).length
     )
   }
 

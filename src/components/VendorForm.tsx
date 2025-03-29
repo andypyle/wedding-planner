@@ -289,18 +289,18 @@ export const VendorForm = ({
 
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium text-earth-900">Payments</h3>
+          <h3 className="text-lg font-medium text-slate-900">Payments</h3>
           <button
             type="button"
             onClick={() => setShowPaymentForm(true)}
-            className="btn-primary"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200"
             disabled={isFormDisabled}>
             Add Payment
           </button>
         </div>
 
         {showPaymentForm && (
-          <div className="p-4 bg-earth-50 rounded-lg space-y-4">
+          <div className="p-4 bg-slate-50 rounded-lg space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="label">Amount</label>
@@ -378,14 +378,14 @@ export const VendorForm = ({
               <button
                 type="button"
                 onClick={() => setShowPaymentForm(false)}
-                className="btn-secondary"
+                className="inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200"
                 disabled={isFormDisabled}>
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleAddPayment}
-                className="btn-primary"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200"
                 disabled={isFormDisabled || isAddingPayment}>
                 {isAddingPayment ? 'Adding Payment...' : 'Add Payment'}
               </button>
@@ -395,48 +395,46 @@ export const VendorForm = ({
 
         {formData.payments.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-earth-200">
-              <thead className="bg-earth-50">
+            <table className="min-w-full divide-y divide-slate-200">
+              <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-earth-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-earth-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Amount
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-earth-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Method
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-earth-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Notes
                   </th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-earth-500 uppercase tracking-wider">
+                  <th className="px-3 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-earth-200">
+              <tbody className="bg-white divide-y divide-slate-200">
                 {formData.payments.map((payment) => (
-                  <tr key={payment.id}>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-earth-900">
+                  <tr key={payment.id} className="hover:bg-slate-50">
+                    <td className="px-3 py-2 text-sm text-slate-900">
                       {new Date(payment.date).toLocaleDateString()}
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-earth-900">
+                    <td className="px-3 py-2 text-sm text-slate-900">
                       ${payment.amount.toLocaleString()}
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap text-sm text-earth-900">
+                    <td className="px-3 py-2 text-sm text-slate-500">
                       {payment.method}
                     </td>
-                    <td className="px-3 py-2 text-sm text-earth-900">
+                    <td className="px-3 py-2 text-sm text-slate-500">
                       {payment.notes}
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap text-right text-sm">
+                    <td className="px-3 py-2 text-right text-sm font-medium">
                       <button
-                        type="button"
                         onClick={() => handleDeletePayment(payment.id)}
-                        className="text-red-500 hover:text-red-700"
-                        disabled={isFormDisabled || isDeletingPayment}>
-                        {isDeletingPayment ? 'Removing...' : 'Remove'}
+                        className="text-red-500 hover:text-red-600">
+                        Delete
                       </button>
                     </td>
                   </tr>
@@ -448,26 +446,26 @@ export const VendorForm = ({
 
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-earth-600">Total Price:</span>
+            <span className="text-slate-600">Total Price:</span>
             <span className="font-medium">
               ${formData.price.toLocaleString()}
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-earth-600">Total Paid:</span>
+            <span className="text-slate-600">Total Paid:</span>
             <span className="font-medium">
               ${totalPaid.toLocaleString()} ({paymentPercentage}%)
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-earth-600">Remaining:</span>
+            <span className="text-slate-600">Remaining:</span>
             <span className="font-medium">
               ${formData.remaining_balance.toLocaleString()}
             </span>
           </div>
-          <div className="w-full bg-earth-200 rounded-full h-2">
+          <div className="w-full bg-slate-200 rounded-full h-2">
             <div
-              className="bg-primary h-2 rounded-full"
+              className="bg-slate-600 h-2 rounded-full"
               style={{ width: `${paymentPercentage}%` }}></div>
           </div>
         </div>
@@ -477,13 +475,13 @@ export const VendorForm = ({
         <button
           type="button"
           onClick={onCancel}
-          className="btn-secondary"
+          className="inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200"
           disabled={isFormDisabled}>
           Cancel
         </button>
         <button
           type="submit"
-          className="btn-primary"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200"
           disabled={isFormDisabled || isSubmitting}>
           {isSubmitting
             ? vendor

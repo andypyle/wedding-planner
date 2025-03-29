@@ -2,9 +2,15 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
+import { Outfit } from 'next/font/google'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
+
+const outfit = Outfit({
+  weight: '800',
+  subsets: ['latin'],
+})
 
 interface NavigationProps {
   user: User | null
@@ -39,12 +45,14 @@ export default function Navigation({ user }: NavigationProps) {
   }
 
   return (
-    <nav className="bg-white shadow-sm border-b border-earth-200">
+    <nav className="bg-white shadow-sm border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold text-primary">
+          <div className="flex flex-1">
+            <div className="flex-shrink-0 flex items-center flex-1">
+              <Link
+                href="/"
+                className={`${outfit.className} text-4xl font-extrabold text-slate-800`}>
                 Wedding Planner
               </Link>
             </div>
@@ -58,8 +66,8 @@ export default function Navigation({ user }: NavigationProps) {
                     href={item.href}
                     className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                       isActive(item.href)
-                        ? 'border-primary text-earth-900'
-                        : 'border-transparent text-earth-500 hover:text-earth-700 hover:border-earth-300'
+                        ? 'border-slate-600 text-slate-900'
+                        : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
                     }`}>
                     {item.name}
                   </Link>
@@ -74,13 +82,13 @@ export default function Navigation({ user }: NavigationProps) {
                 <div>
                   <button
                     type="button"
-                    className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                    className="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
                     id="user-menu-button"
                     aria-expanded={isProfileMenuOpen}
                     aria-haspopup="true"
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}>
                     <span className="sr-only">Open user menu</span>
-                    <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center">
                       {user.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
                   </button>
@@ -93,12 +101,12 @@ export default function Navigation({ user }: NavigationProps) {
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"
                     tabIndex={-1}>
-                    <span className="block px-4 py-2 text-xs text-earth-500">
+                    <span className="block px-4 py-2 text-xs text-slate-500">
                       {user.email}
                     </span>
                     <Link
                       href="/profile"
-                      className="block px-4 py-2 text-sm text-earth-700 hover:bg-earth-100"
+                      className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                       role="menuitem"
                       tabIndex={-1}
                       onClick={() => setIsProfileMenuOpen(false)}>
@@ -106,7 +114,7 @@ export default function Navigation({ user }: NavigationProps) {
                     </Link>
                     <Link
                       href="/settings"
-                      className="block px-4 py-2 text-sm text-earth-700 hover:bg-earth-100"
+                      className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                       role="menuitem"
                       tabIndex={-1}
                       onClick={() => setIsProfileMenuOpen(false)}>
@@ -114,7 +122,7 @@ export default function Navigation({ user }: NavigationProps) {
                     </Link>
                     <button
                       type="button"
-                      className="block w-full text-left px-4 py-2 text-sm text-earth-700 hover:bg-earth-100"
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                       role="menuitem"
                       tabIndex={-1}
                       onClick={() => {
@@ -130,12 +138,12 @@ export default function Navigation({ user }: NavigationProps) {
               <div className="flex space-x-4">
                 <Link
                   href="/login"
-                  className="text-sm font-medium text-earth-500 hover:text-earth-900 px-3 py-2">
+                  className="text-sm font-medium text-slate-500 hover:text-slate-900 px-3 py-2">
                   Sign in
                 </Link>
                 <Link
                   href="/signup"
-                  className="text-sm font-medium text-white bg-primary hover:bg-primary-dark px-3 py-2 rounded-md">
+                  className="text-sm font-medium text-white bg-slate-600 hover:bg-slate-700 px-3 py-2 rounded-md">
                   Sign up
                 </Link>
               </div>
@@ -146,7 +154,7 @@ export default function Navigation({ user }: NavigationProps) {
           <div className="flex items-center sm:hidden">
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-earth-400 hover:text-earth-500 hover:bg-earth-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
+              className="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-slate-500"
               aria-controls="mobile-menu"
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -196,8 +204,8 @@ export default function Navigation({ user }: NavigationProps) {
                   href={item.href}
                   className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                     isActive(item.href)
-                      ? 'border-primary text-primary bg-primary/5'
-                      : 'border-transparent text-earth-500 hover:bg-earth-50 hover:border-earth-300 hover:text-earth-700'
+                      ? 'border-slate-600 text-slate-900 bg-slate-50'
+                      : 'border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700'
                   }`}
                   onClick={() => setIsMenuOpen(false)}>
                   {item.name}
@@ -205,21 +213,21 @@ export default function Navigation({ user }: NavigationProps) {
               ))}
           </div>
 
-          <div className="pt-4 pb-3 border-t border-earth-200">
+          <div className="pt-4 pb-3 border-t border-slate-200">
             {user ? (
               <>
                 <div className="flex items-center px-4">
                   <div className="flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                    <div className="h-10 w-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center">
                       {user.email?.charAt(0).toUpperCase() || 'U'}
                     </div>
                   </div>
                   <div className="ml-3">
-                    <div className="text-base font-medium text-earth-800">
+                    <div className="text-base font-medium text-slate-800">
                       {user.user_metadata?.partner1_name} &{' '}
                       {user.user_metadata?.partner2_name}
                     </div>
-                    <div className="text-sm font-medium text-earth-500">
+                    <div className="text-sm font-medium text-slate-500">
                       {user.email}
                     </div>
                   </div>
@@ -227,19 +235,19 @@ export default function Navigation({ user }: NavigationProps) {
                 <div className="mt-3 space-y-1">
                   <Link
                     href="/profile"
-                    className="block px-4 py-2 text-base font-medium text-earth-500 hover:text-earth-800 hover:bg-earth-100"
+                    className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                     onClick={() => setIsMenuOpen(false)}>
                     Your Profile
                   </Link>
                   <Link
                     href="/settings"
-                    className="block px-4 py-2 text-base font-medium text-earth-500 hover:text-earth-800 hover:bg-earth-100"
+                    className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                     onClick={() => setIsMenuOpen(false)}>
                     Settings
                   </Link>
                   <button
                     type="button"
-                    className="block w-full text-left px-4 py-2 text-base font-medium text-earth-500 hover:text-earth-800 hover:bg-earth-100"
+                    className="block w-full text-left px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                     onClick={() => {
                       setIsMenuOpen(false)
                       handleSignOut()
@@ -249,16 +257,16 @@ export default function Navigation({ user }: NavigationProps) {
                 </div>
               </>
             ) : (
-              <div className="mt-3 space-y-1 px-2">
+              <div className="space-y-1">
                 <Link
                   href="/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-earth-500 hover:text-earth-800 hover:bg-earth-100"
+                  className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                   onClick={() => setIsMenuOpen(false)}>
                   Sign in
                 </Link>
                 <Link
                   href="/signup"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-earth-500 hover:text-earth-800 hover:bg-earth-100"
+                  className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
                   onClick={() => setIsMenuOpen(false)}>
                   Sign up
                 </Link>

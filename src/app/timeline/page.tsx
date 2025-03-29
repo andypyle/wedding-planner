@@ -165,8 +165,40 @@ export default function TimelinePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-semibold text-slate-800">
+              Day-of Timeline
+            </h1>
+            <p className="mt-1 text-sm text-slate-600">
+              Plan and manage your wedding day schedule
+            </p>
+          </div>
+          <div className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+            Loading...
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bg-slate-100 p-6 rounded-lg border border-slate-200 animate-pulse">
+            <div className="h-6 bg-slate-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-slate-200 rounded w-1/4 mb-4"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+              <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+            </div>
+          </div>
+          <div className="bg-slate-100 p-6 rounded-lg border border-slate-200 animate-pulse">
+            <div className="h-6 bg-slate-200 rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-slate-200 rounded w-1/4 mb-4"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+              <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -175,10 +207,10 @@ export default function TimelinePage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-earth-800">
+          <h1 className="text-2xl font-semibold text-slate-800">
             Day-of Timeline
           </h1>
-          <p className="mt-1 text-sm text-earth-600">
+          <p className="mt-1 text-sm text-slate-600">
             Plan and manage your wedding day schedule
           </p>
         </div>
@@ -187,7 +219,15 @@ export default function TimelinePage() {
             setEditingEvent(null)
             setShowForm(true)
           }}
-          className="btn-primary">
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200">
+          <svg
+            className="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+          </svg>
           Add Event
         </button>
       </div>
@@ -222,13 +262,15 @@ export default function TimelinePage() {
 
       <div className="space-y-4">
         {events.map((event) => (
-          <div key={event.id} className="card">
+          <div
+            key={event.id}
+            className="bg-slate-100 p-6 rounded-lg border border-slate-200">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-lg font-medium text-earth-800">
+                <h3 className="text-lg font-medium text-slate-800">
                   {event.title}
                 </h3>
-                <p className="text-sm text-earth-600">
+                <p className="text-sm text-slate-600">
                   {formatTime(event.start_time)}
                   {event.end_time && ` - ${formatTime(event.end_time)}`}
                 </p>
@@ -236,7 +278,7 @@ export default function TimelinePage() {
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleEdit(event)}
-                  className="text-primary hover:text-primary-dark">
+                  className="text-slate-600 hover:text-slate-800">
                   Edit
                 </button>
                 <button
@@ -248,39 +290,39 @@ export default function TimelinePage() {
             </div>
 
             {event.description && (
-              <p className="mt-2 text-earth-700">{event.description}</p>
+              <p className="mt-2 text-slate-700">{event.description}</p>
             )}
 
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               {event.location && (
                 <div>
-                  <h4 className="text-sm font-medium text-earth-600">
+                  <h4 className="text-sm font-medium text-slate-600">
                     Location
                   </h4>
-                  <p className="mt-1 text-earth-700">{event.location}</p>
+                  <p className="mt-1 text-slate-700">{event.location}</p>
                 </div>
               )}
 
               {event.vendor_name && (
                 <div>
-                  <h4 className="text-sm font-medium text-earth-600">Vendor</h4>
-                  <p className="mt-1 text-earth-700">{event.vendor_name}</p>
+                  <h4 className="text-sm font-medium text-slate-600">Vendor</h4>
+                  <p className="mt-1 text-slate-700">{event.vendor_name}</p>
                 </div>
               )}
 
               {event.vendor_contact && (
                 <div>
-                  <h4 className="text-sm font-medium text-earth-600">
+                  <h4 className="text-sm font-medium text-slate-600">
                     Vendor Contact
                   </h4>
-                  <p className="mt-1 text-earth-700">{event.vendor_contact}</p>
+                  <p className="mt-1 text-slate-700">{event.vendor_contact}</p>
                 </div>
               )}
 
               {event.notes && (
                 <div className="md:col-span-2">
-                  <h4 className="text-sm font-medium text-earth-600">Notes</h4>
-                  <p className="mt-1 text-earth-700">{event.notes}</p>
+                  <h4 className="text-sm font-medium text-slate-600">Notes</h4>
+                  <p className="mt-1 text-slate-700">{event.notes}</p>
                 </div>
               )}
             </div>
@@ -288,14 +330,14 @@ export default function TimelinePage() {
         ))}
 
         {events.length === 0 && !showForm && (
-          <div className="card text-center py-8">
-            <p className="text-earth-600">No events added yet.</p>
+          <div className="bg-slate-100 p-6 rounded-lg border border-slate-200 text-center py-8">
+            <p className="text-slate-600">No events added yet.</p>
             <button
               onClick={() => {
                 setEditingEvent(null)
                 setShowForm(true)
               }}
-              className="mt-4 text-primary hover:text-primary-dark">
+              className="mt-4 text-slate-600 hover:text-slate-800">
               Add your first event
             </button>
           </div>

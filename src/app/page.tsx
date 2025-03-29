@@ -1,49 +1,26 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import { DashboardClient } from './DashboardClient'
+'use client'
 
-export default async function Dashboard() {
-  const supabase = await createClient()
-  const { data } = await supabase.auth.getUser()
+import { useAuth } from '@/hooks/useAuth'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
-  if (!data.user) {
-    redirect('/login')
-  }
+export default function Home() {
+  const router = useRouter()
+  const { user, loading } = useAuth()
 
-  // Get vendors data
-  const { data: vendors } = await supabase
-    .from('vendors')
-    .select('*, payments(*)')
-    .eq('user_id', data.user.id)
-    .order('name')
-
-  // Get guests data
-  const { data: guests } = await supabase
-    .from('guests')
-    .select('*')
-    .eq('user_id', data.user.id)
-    .order('first_name')
-
-  // Get profile data for wedding date
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('wedding_date')
-    .eq('id', data.user.id)
-    .single()
-
-  // Calculate days until wedding
-  const daysUntilWedding = profile?.wedding_date
-    ? Math.ceil(
-        (new Date(profile.wedding_date).getTime() - new Date().getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
-    : null
+  useEffect(() => {
+    if (!loading) {
+      if (user) {
+        router.push('/dashboard')
+      } else {
+        router.push('/login')
+      }
+    }
+  }, [user, loading, router])
 
   return (
-    <DashboardClient
-      vendors={vendors || []}
-      guests={guests || []}
-      daysUntilWedding={daysUntilWedding}
-    />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>
   )
 }

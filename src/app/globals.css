@@ -7,9 +7,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM_Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 :root {
-  --primary: #6366f1;
-  --primary-dark: #4f46e5;
-  --primary-light: #818cf8;
+  --primary: #7c3aed;
+  --primary-dark: #6d28d9;
+  --primary-light: #8b5cf6;
   --secondary: #ec4899;
   --secondary-dark: #db2777;
   --secondary-light: #f472b6;
@@ -31,7 +31,7 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-background to-earth-300 min-h-screen font-sans text-earth-800;
+    @apply bg-gray-50 text-gray-900;
   }
 
   h1,
@@ -58,11 +58,11 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-all;
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
   }
 
   .btn-secondary {
-    @apply bg-secondary text-earth-800 px-4 py-2 rounded-md hover:bg-secondary/90 transition-all;
+    @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200;
   }
 
   .btn-accent {
@@ -82,7 +82,7 @@
   }
 
   .card {
-    @apply bg-white p-6 rounded-lg shadow-sm border border-earth-300;
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md;
   }
 
   .badge {
@@ -90,15 +90,15 @@
   }
 
   .badge-primary {
-    @apply bg-primary/10 text-primary-dark;
+    @apply bg-primary/10 text-primary;
   }
 
   .badge-secondary {
-    @apply bg-secondary/10 text-secondary-dark;
+    @apply bg-secondary/10 text-secondary;
   }
 
   .badge-accent {
-    @apply bg-accent/10 text-accent-dark;
+    @apply bg-accent/10 text-accent;
   }
 
   .status-badge {
@@ -110,7 +110,7 @@
   }
 
   .status-in-progress {
-    @apply bg-primary/10 text-primary-dark;
+    @apply bg-primary/10 text-primary;
   }
 
   .status-completed {
@@ -203,6 +203,57 @@
 .timeline-item::before {
   content: '';
   @apply absolute w-3 h-3 bg-primary rounded-full -left-[6.5px] top-1;
+}
+
+/* Smooth page transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Fade in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Slide in animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.5s ease-out;
 }
 
 /* Add other custom styles as needed */

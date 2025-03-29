@@ -223,10 +223,10 @@ export default function ChecklistPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-semibold text-earth-800">
+          <h1 className="text-2xl font-semibold text-slate-800">
             Wedding Checklist
           </h1>
-          <p className="mt-1 text-sm text-earth-600">
+          <p className="mt-1 text-sm text-slate-600">
             Keep track of all your wedding planning tasks
           </p>
         </div>
@@ -242,8 +242,16 @@ export default function ChecklistPage() {
             })
             setShowForm(true)
           }}
-          className="btn-primary">
-          Add Item
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200">
+          <svg
+            className="-ml-1 mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+          </svg>
+          Add Task
         </button>
       </div>
 
@@ -271,7 +279,7 @@ export default function ChecklistPage() {
           <div>
             <label
               htmlFor="title"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Title
             </label>
             <input
@@ -281,7 +289,7 @@ export default function ChecklistPage() {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
               required
             />
           </div>
@@ -289,7 +297,7 @@ export default function ChecklistPage() {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Description
             </label>
             <textarea
@@ -299,14 +307,14 @@ export default function ChecklistPage() {
                 setFormData({ ...formData, description: e.target.value })
               }
               rows={3}
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="category"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Category
             </label>
             <select
@@ -318,7 +326,7 @@ export default function ChecklistPage() {
                   category: e.target.value as ChecklistCategory,
                 })
               }
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm">
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm">
               {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
@@ -330,7 +338,7 @@ export default function ChecklistPage() {
           <div>
             <label
               htmlFor="due_date"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Due Date
             </label>
             <input
@@ -340,14 +348,14 @@ export default function ChecklistPage() {
               onChange={(e) =>
                 setFormData({ ...formData, due_date: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="notes"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Notes
             </label>
             <textarea
@@ -357,7 +365,7 @@ export default function ChecklistPage() {
                 setFormData({ ...formData, notes: e.target.value })
               }
               rows={3}
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             />
           </div>
 
@@ -365,10 +373,13 @@ export default function ChecklistPage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="btn-secondary">
+              className="inline-flex items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200">
               Cancel
             </button>
-            <button type="submit" disabled={loading} className="btn-primary">
+            <button
+              type="submit"
+              disabled={loading}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200">
               {loading
                 ? 'Saving...'
                 : editingItem
@@ -387,21 +398,23 @@ export default function ChecklistPage() {
           if (categoryItems.length === 0) return null
 
           return (
-            <div key={category} className="card">
-              <h2 className="text-lg font-medium text-earth-800 mb-4">
+            <div
+              key={category}
+              className="bg-slate-100 p-6 rounded-lg border border-slate-200">
+              <h2 className="text-lg font-medium text-slate-800 mb-4">
                 {category}
               </h2>
               <div className="space-y-4">
                 {categoryItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-start space-x-4 p-4 bg-white rounded-lg border border-earth-200">
+                    className="flex items-start space-x-4 p-4 bg-white rounded-lg border border-slate-200">
                     <button
                       onClick={() => handleToggleComplete(item)}
                       className={`mt-1 h-5 w-5 rounded-full border-2 flex items-center justify-center ${
                         item.completed
-                          ? 'bg-primary border-primary'
-                          : 'border-earth-300'
+                          ? 'bg-slate-600 border-slate-600'
+                          : 'border-slate-300'
                       }`}>
                       {item.completed && (
                         <svg
@@ -424,18 +437,18 @@ export default function ChecklistPage() {
                           <h3
                             className={`text-base font-medium ${
                               item.completed
-                                ? 'text-earth-400 line-through'
-                                : 'text-earth-800'
+                                ? 'text-slate-400 line-through'
+                                : 'text-slate-800'
                             }`}>
                             {item.title}
                           </h3>
                           {item.description && (
-                            <p className="mt-1 text-sm text-earth-600">
+                            <p className="mt-1 text-sm text-slate-600">
                               {item.description}
                             </p>
                           )}
                           {item.due_date && (
-                            <p className="mt-1 text-sm text-earth-500">
+                            <p className="mt-1 text-sm text-slate-500">
                               Due:{' '}
                               {new Date(item.due_date).toLocaleDateString()}
                             </p>
@@ -444,7 +457,7 @@ export default function ChecklistPage() {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(item)}
-                            className="text-primary hover:text-primary-dark">
+                            className="text-slate-600 hover:text-slate-800">
                             Edit
                           </button>
                           <button
@@ -455,7 +468,7 @@ export default function ChecklistPage() {
                         </div>
                       </div>
                       {item.notes && (
-                        <div className="mt-2 p-2 bg-earth-50 rounded text-sm text-earth-600">
+                        <div className="mt-2 p-2 bg-slate-50 rounded text-sm text-slate-600">
                           {item.notes}
                         </div>
                       )}
@@ -468,8 +481,8 @@ export default function ChecklistPage() {
         })}
 
         {items.length === 0 && !showForm && (
-          <div className="card text-center py-8">
-            <p className="text-earth-600">No checklist items added yet.</p>
+          <div className="bg-slate-100 p-6 rounded-lg border border-slate-200 text-center py-8">
+            <p className="text-slate-600">No checklist items added yet.</p>
             <button
               onClick={() => {
                 setEditingItem(null)
@@ -482,7 +495,7 @@ export default function ChecklistPage() {
                 })
                 setShowForm(true)
               }}
-              className="mt-4 text-primary hover:text-primary-dark">
+              className="mt-4 text-slate-600 hover:text-slate-800">
               Add your first item
             </button>
           </div>

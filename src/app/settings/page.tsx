@@ -163,7 +163,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600"></div>
       </div>
     )
   }
@@ -171,8 +171,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-earth-800">Settings</h1>
-        <p className="mt-1 text-sm text-earth-600">
+        <h1 className="text-2xl font-semibold text-slate-800">Settings</h1>
+        <p className="mt-1 text-sm text-slate-600">
           Manage your account settings and preferences
         </p>
       </div>
@@ -190,20 +190,22 @@ export default function SettingsPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card">
-          <h2 className="text-lg font-medium mb-4">Notifications</h2>
+        <div className="bg-white shadow-sm rounded-lg border border-slate-200 p-6">
+          <h2 className="text-lg font-medium mb-4 text-slate-800">
+            Notifications
+          </h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="email"
-                className="inline-block text-sm font-medium text-earth-700">
+                className="inline-block text-sm font-medium text-slate-700">
                 Email Notifications
               </label>
               <input
                 type="checkbox"
                 id="email"
                 name="email"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.notifications.email}
                 onChange={handleNotificationChange}
               />
@@ -211,14 +213,14 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="sms"
-                className="inline-block text-sm font-medium text-earth-700">
+                className="inline-block text-sm font-medium text-slate-700">
                 SMS Notifications
               </label>
               <input
                 type="checkbox"
                 id="sms"
                 name="sms"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.notifications.sms}
                 onChange={handleNotificationChange}
               />
@@ -226,14 +228,14 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="pushNotifications"
-                className="inline-block text-sm font-medium text-earth-700">
+                className="inline-block text-sm font-medium text-slate-700">
                 Push Notifications
               </label>
               <input
                 type="checkbox"
                 id="pushNotifications"
                 name="pushNotifications"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.notifications.pushNotifications}
                 onChange={handleNotificationChange}
               />
@@ -241,20 +243,20 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="card">
-          <h2 className="text-lg font-medium mb-4">Privacy</h2>
+        <div className="bg-white shadow-sm rounded-lg border border-slate-200 p-6">
+          <h2 className="text-lg font-medium mb-4 text-slate-800">Privacy</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="shareWithVendors"
-                className="inline-block text-sm font-medium text-earth-700">
-                Share Info with Vendors
+                className="inline-block text-sm font-medium text-slate-700">
+                Share with Vendors
               </label>
               <input
                 type="checkbox"
                 id="shareWithVendors"
                 name="shareWithVendors"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.privacy.shareWithVendors}
                 onChange={handlePrivacyChange}
               />
@@ -262,14 +264,14 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="publicProfile"
-                className="inline-block text-sm font-medium text-earth-700">
+                className="inline-block text-sm font-medium text-slate-700">
                 Public Profile
               </label>
               <input
                 type="checkbox"
                 id="publicProfile"
                 name="publicProfile"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.privacy.publicProfile}
                 onChange={handlePrivacyChange}
               />
@@ -277,20 +279,20 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="card">
-          <h2 className="text-lg font-medium mb-4">Display</h2>
+        <div className="bg-white shadow-sm rounded-lg border border-slate-200 p-6">
+          <h2 className="text-lg font-medium mb-4 text-slate-800">Display</h2>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <label
                 htmlFor="darkMode"
-                className="inline-block text-sm font-medium text-earth-700">
+                className="inline-block text-sm font-medium text-slate-700">
                 Dark Mode
               </label>
               <input
                 type="checkbox"
                 id="darkMode"
                 name="darkMode"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.display.darkMode}
                 onChange={handleDisplayChange}
               />
@@ -298,14 +300,14 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="highContrast"
-                className="inline-block text-sm font-medium text-earth-700">
+                className="inline-block text-sm font-medium text-slate-700">
                 High Contrast
               </label>
               <input
                 type="checkbox"
                 id="highContrast"
                 name="highContrast"
-                className="h-4 w-4 text-primary focus:ring-primary border-earth-300 rounded"
+                className="h-4 w-4 text-slate-600 focus:ring-slate-500 border-slate-300 rounded"
                 checked={settings.display.highContrast}
                 onChange={handleDisplayChange}
               />
@@ -314,51 +316,57 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="card">
-        <h2 className="text-lg font-medium mb-4">General Settings</h2>
-        <div className="space-y-4 max-w-md">
+      <div className="bg-white shadow-sm rounded-lg border border-slate-200 p-6">
+        <h2 className="text-lg font-medium mb-4 text-slate-800">
+          General Settings
+        </h2>
+        <div className="space-y-4">
           <div>
-            <label htmlFor="language" className="label">
+            <label
+              htmlFor="language"
+              className="block text-sm font-medium text-slate-700 mb-1">
               Language
             </label>
             <select
               id="language"
               name="language"
-              className="input"
+              className="block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
               value={settings.language}
               onChange={handleGeneralChange}>
               <option value="english">English</option>
               <option value="spanish">Spanish</option>
               <option value="french">French</option>
+              <option value="german">German</option>
             </select>
           </div>
-
           <div>
-            <label htmlFor="timezone" className="label">
-              Time Zone
+            <label
+              htmlFor="timezone"
+              className="block text-sm font-medium text-slate-700 mb-1">
+              Timezone
             </label>
             <select
               id="timezone"
               name="timezone"
-              className="input"
+              className="block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
               value={settings.timezone}
               onChange={handleGeneralChange}>
-              <option value="America/New_York">Eastern Time (ET)</option>
-              <option value="America/Chicago">Central Time (CT)</option>
-              <option value="America/Denver">Mountain Time (MT)</option>
-              <option value="America/Los_Angeles">Pacific Time (PT)</option>
+              <option value="America/New_York">Eastern Time</option>
+              <option value="America/Chicago">Central Time</option>
+              <option value="America/Denver">Mountain Time</option>
+              <option value="America/Los_Angeles">Pacific Time</option>
             </select>
           </div>
         </div>
+      </div>
 
-        <div className="mt-6">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="btn-primary disabled:opacity-70">
-            {saving ? 'Saving...' : 'Save Settings'}
-          </button>
-        </div>
+      <div className="flex justify-end">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          {saving ? 'Saving...' : 'Save Settings'}
+        </button>
       </div>
     </div>
   )

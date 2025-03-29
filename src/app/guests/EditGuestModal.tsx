@@ -46,7 +46,7 @@ export function EditGuestModal({
           <div>
             <label
               htmlFor="first_name"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               First Name
             </label>
             <input
@@ -56,7 +56,7 @@ export function EditGuestModal({
               onChange={(e) =>
                 setFormData({ ...formData, first_name: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
               required
             />
           </div>
@@ -64,7 +64,7 @@ export function EditGuestModal({
           <div>
             <label
               htmlFor="last_name"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Last Name
             </label>
             <input
@@ -74,7 +74,7 @@ export function EditGuestModal({
               onChange={(e) =>
                 setFormData({ ...formData, last_name: e.target.value })
               }
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+              className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
               required
             />
           </div>
@@ -83,7 +83,7 @@ export function EditGuestModal({
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-medium text-earth-700">
+            className="block text-sm font-medium text-slate-700">
             Email
           </label>
           <input
@@ -93,7 +93,7 @@ export function EditGuestModal({
             onChange={(e) =>
               setFormData({ ...formData, email: e.target.value })
             }
-            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             required
           />
         </div>
@@ -101,7 +101,7 @@ export function EditGuestModal({
         <div>
           <label
             htmlFor="phone"
-            className="block text-sm font-medium text-earth-700">
+            className="block text-sm font-medium text-slate-700">
             Phone
           </label>
           <input
@@ -111,7 +111,7 @@ export function EditGuestModal({
             onChange={(e) =>
               setFormData({ ...formData, phone: e.target.value })
             }
-            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             required
           />
         </div>
@@ -119,7 +119,7 @@ export function EditGuestModal({
         <div>
           <label
             htmlFor="group"
-            className="block text-sm font-medium text-earth-700">
+            className="block text-sm font-medium text-slate-700">
             Group
           </label>
           <input
@@ -129,7 +129,7 @@ export function EditGuestModal({
             onChange={(e) =>
               setFormData({ ...formData, group: e.target.value })
             }
-            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             required
           />
         </div>
@@ -137,7 +137,7 @@ export function EditGuestModal({
         <div>
           <label
             htmlFor="rsvp_status"
-            className="block text-sm font-medium text-earth-700">
+            className="block text-sm font-medium text-slate-700">
             RSVP Status
           </label>
           <select
@@ -149,7 +149,7 @@ export function EditGuestModal({
                 rsvp_status: e.target.value as Guest['rsvp_status'],
               })
             }
-            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             required>
             <option value="pending">Pending</option>
             <option value="attending">Attending</option>
@@ -160,7 +160,7 @@ export function EditGuestModal({
         <div>
           <label
             htmlFor="dietary_restrictions"
-            className="block text-sm font-medium text-earth-700">
+            className="block text-sm font-medium text-slate-700">
             Dietary Restrictions
           </label>
           <input
@@ -173,7 +173,7 @@ export function EditGuestModal({
                 dietary_restrictions: e.target.value,
               })
             }
-            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm"
             placeholder="None"
           />
         </div>
@@ -186,11 +186,11 @@ export function EditGuestModal({
             onChange={(e) =>
               setFormData({ ...formData, plus_one: e.target.checked })
             }
-            className="h-4 w-4 rounded border-earth-300 text-primary focus:ring-primary"
+            className="h-4 w-4 rounded border-slate-300 text-slate-600 focus:ring-slate-500"
           />
           <label
             htmlFor="plus_one"
-            className="ml-2 block text-sm text-earth-700">
+            className="ml-2 block text-sm text-slate-700">
             Allow Plus One
           </label>
         </div>
@@ -198,13 +198,16 @@ export function EditGuestModal({
         {error && <div className="text-sm text-red-600">{error}</div>}
 
         <div className="flex justify-end space-x-3">
-          <button type="button" onClick={onClose} className="btn btn-secondary">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn btn-primary">
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-70">
             {isSubmitting ? 'Updating...' : 'Update Guest'}
           </button>
         </div>

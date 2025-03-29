@@ -56,12 +56,12 @@ const QuickStats = ({
       {stats.map((stat) => (
         <div
           key={stat.name}
-          className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+          className="overflow-hidden shadow-sm rounded-lg border border-slate-200 bg-slate-100">
           <div className="px-4 py-5 sm:p-6">
-            <dt className="text-sm font-medium text-earth-600 truncate">
+            <dt className="text-sm font-medium text-slate-600 truncate">
               {stat.name}
             </dt>
-            <dd className="mt-1 text-3xl font-semibold text-earth-800">
+            <dd className="mt-1 text-3xl font-semibold text-slate-800">
               {stat.value}
             </dd>
           </div>
@@ -98,44 +98,44 @@ const BudgetOverview = ({ vendors }: BudgetOverviewProps) => {
   )
 
   return (
-    <div className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+    <div className="overflow-hidden shadow-sm rounded-lg border border-slate-200 bg-slate-100">
       <div className="px-4 py-5 sm:p-6">
-        <h3 className="text-lg font-medium text-earth-800 mb-3">
+        <h3 className="text-lg font-medium text-slate-800 mb-3">
           Budget Overview
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
           <div>
-            <dt className="text-sm font-medium text-earth-600">Total Budget</dt>
-            <dd className="mt-1 text-2xl font-semibold text-earth-800">
+            <dt className="text-sm font-medium text-slate-600">Total Budget</dt>
+            <dd className="mt-1 text-2xl font-semibold text-slate-800">
               ${totalBudget.toLocaleString()}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-earth-600">Paid to Date</dt>
-            <dd className="mt-1 text-2xl font-semibold text-earth-800">
+            <dt className="text-sm font-medium text-slate-600">Paid to Date</dt>
+            <dd className="mt-1 text-2xl font-semibold text-slate-800">
               ${totalPaid.toLocaleString()}
-              <span className="text-xs ml-1 text-earth-500">
+              <span className="text-xs ml-1 text-slate-500">
                 ({totalPayments} payment{totalPayments !== 1 ? 's' : ''})
               </span>
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-earth-600">
+            <dt className="text-sm font-medium text-slate-600">
               Remaining Balance
             </dt>
-            <dd className="mt-1 text-2xl font-semibold text-earth-800">
+            <dd className="mt-1 text-2xl font-semibold text-slate-800">
               ${remainingBalance.toLocaleString()}
             </dd>
           </div>
         </div>
 
-        <div className="w-full bg-earth-200 rounded-full h-2.5">
+        <div className="w-full bg-slate-200 rounded-full h-2.5">
           <div
-            className="bg-primary h-2.5 rounded-full"
+            className="bg-slate-600 h-2.5 rounded-full"
             style={{ width: `${paymentPercentage}%` }}></div>
         </div>
-        <p className="text-sm text-earth-600 mt-2">
+        <p className="text-sm text-slate-600 mt-2">
           {paymentPercentage}% of total budget paid
         </p>
       </div>
@@ -163,50 +163,50 @@ const GuestOverview = ({ guests }: GuestOverviewProps) => {
       : 0
 
   return (
-    <div className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+    <div className="overflow-hidden shadow-sm rounded-lg border border-slate-200 bg-slate-100">
       <div className="px-4 py-5 sm:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-earth-800">Guest Overview</h3>
+          <h3 className="text-lg font-medium text-slate-800">Guest Overview</h3>
           <Link
             href="/guests"
-            className="text-sm text-primary hover:text-primary/80">
+            className="text-sm text-slate-600 hover:text-slate-800">
             View All Guests →
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-4">
           <div>
-            <dt className="text-sm font-medium text-earth-600">Total Guests</dt>
-            <dd className="mt-1 text-2xl font-semibold text-earth-800">
+            <dt className="text-sm font-medium text-slate-600">Total Guests</dt>
+            <dd className="mt-1 text-2xl font-semibold text-slate-800">
               {totalGuests}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-earth-600">Confirmed</dt>
-            <dd className="mt-1 text-2xl font-semibold text-green-600">
+            <dt className="text-sm font-medium text-slate-600">Confirmed</dt>
+            <dd className="mt-1 text-2xl font-semibold text-slate-700">
               {confirmedGuests}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-earth-600">Declined</dt>
-            <dd className="mt-1 text-2xl font-semibold text-red-600">
+            <dt className="text-sm font-medium text-slate-600">Declined</dt>
+            <dd className="mt-1 text-2xl font-semibold text-slate-700">
               {declinedGuests}
             </dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-earth-600">Pending</dt>
-            <dd className="mt-1 text-2xl font-semibold text-yellow-600">
+            <dt className="text-sm font-medium text-slate-600">Pending</dt>
+            <dd className="mt-1 text-2xl font-semibold text-slate-700">
               {pendingGuests}
             </dd>
           </div>
         </div>
 
-        <div className="w-full bg-earth-200 rounded-full h-2.5">
+        <div className="w-full bg-slate-200 rounded-full h-2.5">
           <div
-            className="bg-primary h-2.5 rounded-full"
+            className="bg-slate-600 h-2.5 rounded-full"
             style={{ width: `${rsvpPercentage}%` }}></div>
         </div>
-        <p className="text-sm text-earth-600 mt-2">
+        <p className="text-sm text-slate-600 mt-2">
           {rsvpPercentage}% of guests have responded
         </p>
       </div>
@@ -217,11 +217,8 @@ const GuestOverview = ({ guests }: GuestOverviewProps) => {
 const ChecklistOverview = () => {
   const [stats, setStats] = useState<ChecklistStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const supabase = createClient()
-
-  useEffect(() => {
-    fetchChecklistStats()
-  }, [])
 
   const fetchChecklistStats = async () => {
     try {
@@ -232,50 +229,88 @@ const ChecklistOverview = () => {
 
       if (error) throw error
 
-      const stats: ChecklistStats = {
-        total: data?.length || 0,
-        completed: data?.filter((item) => item.completed).length || 0,
-        upcoming:
-          data?.filter(
+      if (data) {
+        const stats: ChecklistStats = {
+          total: data.length,
+          completed: data.filter((item) => item.completed).length,
+          upcoming: data.filter(
             (item) =>
               !item.completed &&
               item.due_date &&
               new Date(item.due_date) > new Date()
-          ).length || 0,
-        categories: {},
-      }
+          ).length,
+          categories: {},
+        }
 
-      data?.forEach((item) => {
-        if (!stats.categories[item.category]) {
-          stats.categories[item.category] = {
-            total: 0,
-            completed: 0,
+        data.forEach((item) => {
+          if (!stats.categories[item.category]) {
+            stats.categories[item.category] = {
+              total: 0,
+              completed: 0,
+            }
           }
-        }
-        stats.categories[item.category].total++
-        if (item.completed) {
-          stats.categories[item.category].completed++
-        }
-      })
+          stats.categories[item.category].total++
+          if (item.completed) {
+            stats.categories[item.category].completed++
+          }
+        })
 
-      setStats(stats)
+        setStats(stats)
+        setError(null)
+      }
     } catch (err) {
       console.error('Error fetching checklist stats:', err)
+      setError('Failed to load checklist data')
+      setStats(null)
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading) {
+  useEffect(() => {
+    let mounted = true
+
+    const loadData = async () => {
+      try {
+        await fetchChecklistStats()
+      } catch (err) {
+        if (!mounted) return
+        console.error('Error in useEffect:', err)
+      }
+    }
+
+    loadData()
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  if (error) {
     return (
-      <div className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+      <div className="overflow-hidden shadow-sm rounded-lg border border-slate-200 bg-slate-100">
         <div className="px-4 py-5 sm:p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-earth-200 rounded w-1/4"></div>
-            <div className="space-y-2">
-              <div className="h-4 bg-earth-200 rounded"></div>
-              <div className="h-4 bg-earth-200 rounded w-5/6"></div>
-            </div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-slate-800">
+              Checklist Progress
+            </h3>
+            <Link
+              href="/checklist"
+              className="text-sm text-slate-600 hover:text-slate-800">
+              View All Tasks →
+            </Link>
+          </div>
+          <div className="text-center py-4">
+            <p className="text-slate-600">{error}</p>
+            <button
+              onClick={() => {
+                setLoading(true)
+                setError(null)
+                fetchChecklistStats()
+              }}
+              className="mt-2 text-slate-600 hover:text-slate-800 text-sm">
+              Try again
+            </button>
           </div>
         </div>
       </div>
@@ -283,51 +318,86 @@ const ChecklistOverview = () => {
   }
 
   return (
-    <div className="bg-surface overflow-hidden shadow-sm rounded-lg border border-earth-200">
+    <div className="overflow-hidden shadow-sm rounded-lg border border-slate-200 bg-slate-100">
       <div className="px-4 py-5 sm:p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-earth-800">
+          <h3 className="text-lg font-medium text-slate-800">
             Checklist Progress
           </h3>
           <Link
             href="/checklist"
-            className="text-sm text-primary hover:text-primary/80">
-            View All →
+            className="text-sm text-slate-600 hover:text-slate-800">
+            View All Tasks →
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-          <div>
-            <dt className="text-sm font-medium text-earth-600">Total Tasks</dt>
-            <dd className="mt-1 text-2xl font-semibold text-earth-800">
-              {stats?.total || 0}
-            </dd>
+        {loading ? (
+          <div className="flex justify-center py-4">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-600"></div>
           </div>
-          <div>
-            <dt className="text-sm font-medium text-earth-600">Completed</dt>
-            <dd className="mt-1 text-2xl font-semibold text-green-600">
-              {stats?.completed || 0}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm font-medium text-earth-600">Upcoming</dt>
-            <dd className="mt-1 text-2xl font-semibold text-yellow-600">
-              {stats?.upcoming || 0}
-            </dd>
-          </div>
-        </div>
+        ) : stats ? (
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-semibold text-slate-800">
+                  {stats.total}
+                </div>
+                <div className="text-sm text-slate-600">Total Tasks</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-semibold text-slate-700">
+                  {stats.completed}
+                </div>
+                <div className="text-sm text-slate-600">Completed</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-semibold text-slate-700">
+                  {stats.upcoming}
+                </div>
+                <div className="text-sm text-slate-600">Upcoming</div>
+              </div>
+            </div>
 
-        <div className="w-full bg-earth-200 rounded-full h-2.5">
-          <div
-            className="bg-primary h-2.5 rounded-full"
-            style={{
-              width: `${stats ? (stats.completed / stats.total) * 100 : 0}%`,
-            }}></div>
-        </div>
-        <p className="text-sm text-earth-600 mt-2">
-          {stats ? Math.round((stats.completed / stats.total) * 100) : 0}% of
-          tasks completed
-        </p>
+            <div className="pt-4 border-t border-slate-200">
+              <h4 className="text-sm font-medium text-slate-700 mb-3">
+                By Category
+              </h4>
+              <div className="space-y-3">
+                {Object.entries(stats.categories).map(
+                  ([category, categoryStats]) => (
+                    <div key={category}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-slate-600">{category}</span>
+                        <span className="font-medium text-slate-800">
+                          {categoryStats.completed}/{categoryStats.total}
+                        </span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-1.5">
+                        <div
+                          className="bg-slate-600 h-1.5 rounded-full"
+                          style={{
+                            width: `${
+                              (categoryStats.completed / categoryStats.total) *
+                              100
+                            }%`,
+                          }}></div>
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-slate-600">No checklist items yet</p>
+            <Link
+              href="/checklist"
+              className="mt-2 text-slate-600 hover:text-slate-800 text-sm">
+              Add your first item
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -337,23 +407,23 @@ const QuickActions = () => {
   const actions = [
     {
       name: 'Add Vendor',
-      href: '/vendors',
-      description: 'Add a new vendor to your list',
+      description: 'Add a new vendor to your wedding planning list',
+      href: '/vendors/new',
     },
     {
       name: 'Add Guest',
-      href: '/guests',
-      description: 'Add guests to your list',
+      description: 'Add a new guest to your wedding guest list',
+      href: '/guests/new',
     },
     {
-      name: 'Update Timeline',
+      name: 'Add Task',
+      description: 'Add a new task to your wedding checklist',
+      href: '/checklist/new',
+    },
+    {
+      name: 'View Timeline',
+      description: 'View your wedding planning timeline',
       href: '/timeline',
-      description: 'Update your wedding day timeline',
-    },
-    {
-      name: 'Manage Checklist',
-      href: '/checklist',
-      description: 'Update your wedding checklist',
     },
   ]
 
@@ -363,10 +433,9 @@ const QuickActions = () => {
         <Link
           key={action.name}
           href={action.href}
-          className="relative group card hover:shadow-md transition-all">
+          className="relative group overflow-hidden shadow-sm rounded-lg border border-slate-200 p-6 transition-all duration-200 hover:shadow-md bg-slate-100">
           <div>
-            <span className="rounded-lg inline-flex p-3 bg-primary/10 text-primary ring-4 ring-earth-100">
-              {/* You can add icons here later */}
+            <span className="rounded-lg inline-flex p-3 bg-slate-200 text-slate-600 ring-4 ring-slate-50">
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -382,11 +451,11 @@ const QuickActions = () => {
             </span>
           </div>
           <div className="mt-4">
-            <h3 className="text-lg font-medium">
+            <h3 className="text-lg font-medium text-slate-800">
               <span className="absolute inset-0" aria-hidden="true" />
               {action.name}
             </h3>
-            <p className="mt-2 text-sm text-earth-600">{action.description}</p>
+            <p className="mt-2 text-sm text-slate-600">{action.description}</p>
           </div>
         </Link>
       ))}
@@ -400,13 +469,11 @@ export function DashboardClient({
   daysUntilWedding,
 }: DashboardClientProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-semibold text-earth-800">
-          Wedding Dashboard
-        </h1>
-        <p className="mt-1 text-sm text-earth-600">
-          Get an overview of your wedding planning progress
+        <h1 className="text-2xl font-semibold text-slate-800">Dashboard</h1>
+        <p className="mt-1 text-sm text-slate-600">
+          Welcome back! Here's an overview of your wedding planning progress.
         </p>
       </div>
 
@@ -420,7 +487,7 @@ export function DashboardClient({
       <ChecklistOverview />
 
       <div>
-        <h2 className="text-lg font-medium text-earth-800 mb-4">
+        <h2 className="text-lg font-medium text-slate-800 mb-4">
           Quick Actions
         </h2>
         <QuickActions />

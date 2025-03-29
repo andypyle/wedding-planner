@@ -1,8 +1,6 @@
 'use client'
 
-import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 interface Profile {
@@ -20,15 +18,16 @@ interface Profile {
 interface ProfileFormProps {
   profile: Profile
   user: User
+  onSubmit: (formData: any) => Promise<void>
+  loading: boolean
 }
 
-export default function ProfileForm({ profile, user }: ProfileFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
-  const supabase = createClient()
-
+export default function ProfileForm({
+  profile,
+  user,
+  onSubmit,
+  loading,
+}: ProfileFormProps) {
   const [formData, setFormData] = useState({
     partner1_name: profile?.partner1_name || '',
     partner2_name: profile?.partner2_name || '',
@@ -47,52 +46,14 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
     })
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    setSuccess(false)
-
-    try {
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update(formData)
-        .eq('id', user.id)
-
-      if (updateError) {
-        throw updateError
-      }
-
-      setSuccess(true)
-      router.refresh()
-    } catch (err) {
-      console.error('Error updating profile:', err)
-      setError('Failed to update profile. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   return (
     <div>
-      {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-          Profile updated successfully!
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form className="space-y-6">
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
             <label
               htmlFor="partner1_name"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Partner 1 Name
             </label>
             <input
@@ -102,14 +63,14 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
               value={formData.partner1_name}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border border-earth-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-slate-500 focus:border-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="partner2_name"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Partner 2 Name
             </label>
             <input
@@ -119,14 +80,14 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
               value={formData.partner2_name}
               onChange={handleChange}
               required
-              className="mt-1 block w-full border border-earth-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-slate-500 focus:border-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="wedding_date"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Wedding Date
             </label>
             <input
@@ -135,14 +96,14 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
               name="wedding_date"
               value={formData.wedding_date}
               onChange={handleChange}
-              className="mt-1 block w-full border border-earth-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-slate-500 focus:border-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="wedding_location"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Wedding Location
             </label>
             <input
@@ -152,14 +113,14 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
               value={formData.wedding_location || ''}
               onChange={handleChange}
               placeholder="e.g. San Francisco, CA"
-              className="mt-1 block w-full border border-earth-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-slate-500 focus:border-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="wedding_venue"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Wedding Venue
             </label>
             <input
@@ -169,14 +130,14 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
               value={formData.wedding_venue || ''}
               onChange={handleChange}
               placeholder="e.g. Grand Ballroom"
-              className="mt-1 block w-full border border-earth-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-slate-500 focus:border-slate-500 sm:text-sm"
             />
           </div>
 
           <div>
             <label
               htmlFor="total_budget"
-              className="block text-sm font-medium text-earth-700">
+              className="block text-sm font-medium text-slate-700">
               Total Budget ($)
             </label>
             <input
@@ -187,18 +148,9 @@ export default function ProfileForm({ profile, user }: ProfileFormProps) {
               onChange={handleChange}
               min="0"
               step="100"
-              className="mt-1 block w-full border border-earth-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+              className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-slate-500 focus:border-slate-500 sm:text-sm"
             />
           </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70">
-            {loading ? 'Saving...' : 'Save Changes'}
-          </button>
         </div>
       </form>
     </div>

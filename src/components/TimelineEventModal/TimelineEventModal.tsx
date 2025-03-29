@@ -1,6 +1,6 @@
 'use client'
 
-import { Modal } from '@/components/Modal'
+import { Modal } from '@/components/modal'
 import { TimelineEventForm } from '@/components/TimelineEventForm/TimelineEventForm'
 import { TimelineEventModalProps } from './types'
 

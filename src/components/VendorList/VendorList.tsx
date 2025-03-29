@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/Button/Button'
-import { Modal } from '@/components/Modal/Modal'
+import { Modal } from '@/components/modal'
 import { Vendor, VendorCategory, VendorStatus } from '@/types/vendor'
 import { useState } from 'react'
 import { VendorListProps } from './types'

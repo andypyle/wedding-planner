@@ -1,7 +1,7 @@
 'use client'
 
 import { handleVendorSubmit } from '@/app/vendors/actions'
-import { VendorForm } from '@/components/VendorForm'
+import { VendorForm } from '@/components/vendors/VendorForm'
 import { Payment, Vendor } from '@/types/vendor'
 
 export function NewVendorForm() {

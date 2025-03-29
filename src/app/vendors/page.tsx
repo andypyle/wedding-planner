@@ -2,7 +2,8 @@
 
 import { AddVendorModal } from '@/components/AddVendorModal'
 import { EditVendorModal } from '@/components/EditVendorModal'
-import { VendorCard } from '@/components/VendorCard'
+import { VendorCard } from '@/components/vendors/VendorCard'
+import { useWindowSize } from '@/hooks/useWindowSize'
 import { createClient } from '@/lib/supabase/client'
 import { Vendor } from '@/types/vendor'
 import { useEffect, useState } from 'react'
@@ -14,7 +15,22 @@ export default function VendorsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAddingPayment, setIsAddingPayment] = useState(false)
   const [isDeletingPayment, setIsDeletingPayment] = useState(false)
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+  const { width } = useWindowSize()
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
+    // Default to grid on mobile, list on desktop
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768 ? 'grid' : 'list'
+    }
+    return 'list'
+  })
+
+  // Update view mode when window size changes
+  useEffect(() => {
+    if (width) {
+      setViewMode(width < 768 ? 'grid' : 'list')
+    }
+  }, [width])
+
   const supabase = createClient()
 
   useEffect(() => {
@@ -172,7 +188,7 @@ export default function VendorsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-slate-800">Vendors</h1>
           <p className="mt-1 text-sm text-slate-600">
@@ -180,11 +196,11 @@ export default function VendorsPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <div className="flex rounded-md shadow-sm">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-2 text-sm font-medium rounded-l-md border ${
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-l-md border ${
                 viewMode === 'grid'
                   ? 'bg-slate-600 text-white border-slate-600'
                   : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
@@ -193,7 +209,7 @@ export default function VendorsPage() {
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-3 py-2 text-sm font-medium rounded-r-md border ${
+              className={`flex-1 px-3 py-2 text-sm font-medium rounded-r-md border ${
                 viewMode === 'list'
                   ? 'bg-slate-600 text-white border-slate-600'
                   : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
@@ -203,7 +219,7 @@ export default function VendorsPage() {
           </div>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200">
+            className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors duration-200">
             <svg
               className="-ml-1 mr-2 h-5 w-5"
               xmlns="http://www.w3.org/2000/svg"

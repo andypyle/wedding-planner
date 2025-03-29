@@ -1,127 +1,36 @@
-# Wedding Planner App with Next.js and Supabase
-
-A modern wedding planning application built with Next.js 14, React Server Components, Server Actions, and Supabase for the backend.
-
-## Features
-
-- 💍 Vendor management with payment tracking
-- 👨‍👩‍👧‍👦 Guest list management
-- 📅 Wedding timeline
-- ✅ Planning checklist
-- 💰 Budget tracking
-- 🔐 User authentication with Supabase
-- 🚀 Server Components and Actions for optimal performance
-
-## Tech Stack
-
-- **Frontend**: Next.js 14, React, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Authentication**: Supabase Auth with email/password and social providers
-- **Styling**: Tailwind CSS with custom earth-tone theme
-- **Deployment**: Vercel (frontend) and Supabase (backend)
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js 18.x or later
-- npm or yarn
-- Supabase account
-
-### Setting up Supabase
-
-1. Create a new Supabase project at [supabase.com](https://supabase.com)
-2. Go to the SQL Editor in your Supabase dashboard
-3. Run the SQL script in `supabase/schema.sql` to set up your database schema
-
-### Environment Setup
-
-1. Clone the repository
-2. Copy `.env.local.example` to `.env.local`
-3. Fill in your Supabase credentials from your Supabase project settings:
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
-   ```
-
-### Installation
+First, run the development server:
 
 ```bash
-# Install dependencies
-npm install
-# or
-yarn install
-
-# Run the development server
 npm run dev
 # or
 yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Project Structure
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```
-├── public/                 # Static assets
-├── src/
-│   ├── app/                # App router pages and layouts
-│   │   ├── actions/        # Server actions
-│   │   ├── api/            # API routes
-│   │   ├── auth/           # Auth-related routes
-│   │   ├── vendors/        # Vendor management pages
-│   │   ├── guests/         # Guest management pages
-│   │   └── profile/        # User profile pages
-│   ├── components/         # React components
-│   ├── hooks/              # Custom React hooks
-│   ├── lib/                # Utility functions and libraries
-│   │   └── supabase/       # Supabase clients
-│   ├── types/              # TypeScript type definitions
-│   └── utils/              # Helper functions
-├── supabase/               # Supabase-related files
-│   └── schema.sql          # Database schema
-└── tailwind.config.ts      # Tailwind CSS configuration
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Development
+## Learn More
 
-### Adding New Features
+To learn more about Next.js, take a look at the following resources:
 
-When adding new features:
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-1. Create appropriate database tables in Supabase
-2. Create types in `src/types/`
-3. Create server actions in `src/app/actions/`
-4. Create UI components in `src/components/`
-5. Create pages in `src/app/`
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-### Authentication Flow
+## Deploy on Vercel
 
-The app uses Supabase Authentication with:
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-- Email/Password login
-- Google OAuth
-- Facebook OAuth
-
-User session is maintained using Supabase's cookie-based auth with Next.js middleware.
-
-## Deployment
-
-### Deploying to Vercel
-
-1. Push your code to a GitHub repository
-2. Import the project in Vercel
-3. Add environment variables for Supabase
-4. Deploy!
-
-### Updating Supabase Schema
-
-When updating your database schema:
-
-1. Update the `supabase/schema.sql` file
-2. Run the new migrations in your Supabase SQL Editor
-3. Update the corresponding TypeScript types
-
-## License
-
-This project is MIT licensed.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

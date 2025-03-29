@@ -162,11 +162,27 @@
   }
 
   .modal {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+    @apply fixed inset-0 flex items-start justify-center z-50;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .modal-content {
-    @apply bg-white rounded-xl p-6 max-w-3xl w-full mx-4 max-h-[90vh] overflow-y-auto;
+    @apply relative bg-white w-full max-w-3xl mx-4 rounded-xl overflow-y-auto;
+    max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem);
+  }
+
+  .modal-header {
+    @apply sticky top-0 bg-white border-b border-slate-200 p-4 flex items-center justify-between;
+  }
+
+  .modal-body {
+    @apply p-4;
+  }
+
+  .modal-footer {
+    @apply sticky bottom-0 bg-white border-t border-slate-200 p-4 flex items-center justify-end gap-2 lg:static lg:border-none lg:p-0 lg:mt-4;
   }
 
   .form-grid {
@@ -183,6 +199,14 @@
 
   .container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  @media (max-width: 1023px) {
+    .modal-content {
+      @apply fixed inset-0 mx-0 rounded-none;
+      max-height: 100vh;
+      max-height: 100dvh;
+    }
   }
 }
 
@@ -254,6 +278,37 @@
 
 .animate-slide-in {
   animation: slideIn 0.5s ease-out;
+}
+
+/* Sidebar animations */
+.sidebar {
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-out;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    transform: translateX(0);
+  }
+}
+
+/* Main content animations */
+.main-content {
+  opacity: 0;
+  transform: translateX(20px);
+  animation: fadeSlideIn 0.3s ease-out forwards;
+  height: 100%;
+}
+
+@keyframes fadeSlideIn {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Add other custom styles as needed */

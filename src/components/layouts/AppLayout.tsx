@@ -1,10 +1,9 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
-import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 // Define public routes that don't require authentication
 const publicRoutes = ['/login', '/signup', '/auth/callback']
@@ -18,12 +17,12 @@ const navigation = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
         className="size-6 h-6 w-6">
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
         />
       </svg>
@@ -37,12 +36,12 @@ const navigation = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
         className="size-6 h-6 w-6">
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
         />
       </svg>
@@ -56,12 +55,12 @@ const navigation = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
         className="size-6 h-6 w-6">
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
         />
       </svg>
@@ -75,12 +74,12 @@ const navigation = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
         className="size-6 h-6 w-6">
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
         />
       </svg>
@@ -94,12 +93,12 @@ const navigation = [
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke="currentColor"
         className="size-6 h-6 w-6">
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeLinecap="round"
+          strokeLinejoin="round"
           d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
         />
       </svg>
@@ -107,10 +106,41 @@ const navigation = [
   },
 ]
 
+// Hook to handle window resize
+function useWindowSize() {
+  const [windowSize, setWindowSize] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 0,
+  })
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize({
+        width: window.innerWidth,
+      })
+    }
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
+      handleResize()
+    }
+
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize)
+      }
+    }
+  }, [])
+
+  return windowSize
+}
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut, loading } = useAuth()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { width } = useWindowSize()
+  const isDesktop = width >= 1024
 
   useEffect(() => {
     if (!loading) {
@@ -146,7 +176,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   if (publicRoutes.includes(pathname)) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <main className="p-8">{children}</main>
+        <main className="p-4 sm:p-8">{children}</main>
       </div>
     )
   }
@@ -158,12 +188,38 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="fixed bottom-6 right-6 z-[100] flex lg:hidden items-center justify-center p-3 rounded-full bg-slate-800 shadow-lg text-white hover:bg-slate-700 transition-colors">
+        <svg
+          className="h-6 w-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24">
+          {isMobileMenuOpen ? (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          ) : (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          )}
+        </svg>
+      </button>
+
       {/* Sidebar */}
-      <motion.div
-        initial={{ x: -300 }}
-        animate={{ x: 0 }}
-        transition={{ type: 'spring', stiffness: 100 }}
-        className="fixed inset-y-0 left-0 w-80 bg-white shadow-lg">
+      <div
+        className={`fixed inset-y-0 left-0 w-80 bg-white shadow-lg z-[90] sidebar ${
+          isMobileMenuOpen ? 'open' : ''
+        }`}>
         <div className="flex h-full flex-col">
           {/* User Profile Section */}
           <div className="border-b border-slate-200 p-4">
@@ -197,6 +253,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.name}
                   href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className={`group flex items-center rounded-lg px-3 py-2 text-base font-medium transition-colors ${
                     isActive
                       ? 'bg-slate-100 text-slate-900'
@@ -214,32 +271,33 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="space-y-1">
               <Link
                 href="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
                 Your Profile
               </Link>
               <Link
                 href="/settings"
+                onClick={() => setIsMobileMenuOpen(false)}
                 className="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
                 Settings
               </Link>
               <button
-                onClick={() => signOut()}
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  signOut()
+                }}
                 className="block w-full text-left px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
                 Sign out
               </button>
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Main Content */}
-      <motion.div
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.2 }}
-        className="pl-80">
-        <main className="p-8">{children}</main>
-      </motion.div>
+      <div className="relative z-0 lg:pl-80 min-h-screen h-screen flex flex-col">
+        <main className="p-6 main-content flex-1">{children}</main>
+      </div>
     </div>
   )
 }

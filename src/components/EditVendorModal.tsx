@@ -1,6 +1,6 @@
-import { Vendor } from '../types/vendor'
+import { Vendor } from '@/types/vendor'
 import { Modal } from './Modal'
-import { VendorForm } from './VendorForm'
+import { VendorForm } from './vendors/VendorForm'
 
 interface EditVendorModalProps {
   vendor: Vendor | null

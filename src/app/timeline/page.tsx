@@ -30,10 +30,12 @@ export default function TimelinePage() {
           return
         }
         setUserId(userData.user.id)
-        fetchEvents()
+        await fetchEvents()
       } catch (err) {
         console.error('Error checking authentication:', err)
         router.push('/login')
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -52,8 +54,6 @@ export default function TimelinePage() {
     } catch (err) {
       console.error('Error fetching events:', err)
       setError('Failed to load timeline events')
-    } finally {
-      setLoading(false)
     }
   }
 

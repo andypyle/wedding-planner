@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface ModalProps {
   isOpen: boolean
@@ -10,6 +10,8 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const [isAnimating, setIsAnimating] = useState(false)
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -20,6 +22,10 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     if (isOpen) {
       document.addEventListener('keydown', handleEscape)
       document.body.style.overflow = 'hidden'
+      // Start animation after a brief delay
+      setTimeout(() => setIsAnimating(true), 10)
+    } else {
+      setIsAnimating(false)
     }
 
     return () => {
@@ -34,11 +40,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         <div
-          className="fixed inset-0 bg-earth-900 bg-opacity-50 transition-opacity"
+          className={`fixed inset-0 bg-earth-900 backdrop-blur-sm transition-opacity duration-300 ${
+            isAnimating ? 'bg-opacity-50' : 'bg-opacity-0'
+          }`}
           onClick={onClose}
         />
 
-        <div className="inline-block transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle">
+        <div
+          className={`inline-block transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left align-bottom shadow-xl transition-all duration-300 sm:my-8 sm:w-full sm:max-w-lg sm:p-6 sm:align-middle ${
+            isAnimating
+              ? 'translate-y-0 opacity-100'
+              : 'translate-y-4 opacity-0'
+          }`}>
           <div className="absolute right-0 top-0 pr-4 pt-4">
             <button
               type="button"

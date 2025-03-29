@@ -2,12 +2,11 @@
 
 import { handleVendorSubmit } from '@/app/vendors/actions'
 import { VendorForm } from '@/components/VendorForm'
-import { Payment, Vendor } from '@/types/vendor'
+import { NewVendorData } from '@/components/VendorForm/types'
+import { Payment } from '@/types/vendor'
 
 export function NewVendorForm() {
-  const handleSubmit = (
-    vendor: Omit<Vendor, 'id' | 'user_id' | 'created_at' | 'updated_at'>
-  ) => {
+  const handleSubmit = (vendor: NewVendorData) => {
     handleVendorSubmit(vendor).catch((error) => {
       console.error('Error submitting vendor:', error)
       alert('Failed to add vendor. Please try again.')

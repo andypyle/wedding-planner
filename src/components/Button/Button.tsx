@@ -2,7 +2,12 @@
 
 import { ButtonProps } from './types'
 
-export type ButtonVariant = 'primary' | 'outline' | 'danger' | 'success'
+export type ButtonVariant =
+  | 'primary'
+  | 'outline'
+  | 'danger'
+  | 'success'
+  | 'ghost'
 
 export function Button({
   variant = 'primary',
@@ -25,6 +30,8 @@ export function Button({
       'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 focus:ring-slate-500',
     danger: 'bg-rose-400 text-white hover:bg-rose-500 focus:ring-rose-300',
     success: 'bg-[#B0C3B3] text-white hover:bg-[#9DB3A0] focus:ring-[#C3D1C5]',
+    ghost:
+      'bg-transparent text-slate-600 hover:bg-slate-50 focus:ring-slate-500',
   }
 
   const sizeClasses = {

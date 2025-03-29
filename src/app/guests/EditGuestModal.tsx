@@ -32,6 +32,7 @@ export function EditGuestModal({
       await updateGuest({
         ...guestData,
         id: guest.id,
+        user_id: guest.user_id,
         created_at: guest.created_at,
         updated_at: guest.updated_at,
       })

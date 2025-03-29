@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/Button/Button'
 import { Modal } from '@/components/Modal/Modal'
-import { Vendor } from '@/types/vendor'
+import { Vendor, VendorCategory, VendorStatus } from '@/types/vendor'
 import { useState } from 'react'
 import { VendorListProps } from './types'
 
@@ -126,7 +126,7 @@ export function VendorList({ vendors, onEdit, onDelete }: VendorListProps) {
                 onChange={(e) =>
                   setSelectedVendor({
                     ...selectedVendor,
-                    category: e.target.value,
+                    category: e.target.value as VendorCategory,
                   })
                 }
                 className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm">
@@ -215,7 +215,7 @@ export function VendorList({ vendors, onEdit, onDelete }: VendorListProps) {
                 onChange={(e) =>
                   setSelectedVendor({
                     ...selectedVendor,
-                    status: e.target.value,
+                    status: e.target.value as VendorStatus,
                   })
                 }
                 className="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-slate-500 focus:ring-slate-500 sm:text-sm">

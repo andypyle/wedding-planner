@@ -6,12 +6,10 @@ import {
   deletePayment as deletePaymentAction,
   updateVendor as updateVendorAction,
 } from '@/app/actions/vendors'
-import { Vendor } from '@/types/vendor'
+import { NewVendorData } from '@/components/VendorForm/types'
 import { redirect } from 'next/navigation'
 
-export async function handleVendorSubmit(
-  vendor: Omit<Vendor, 'id' | 'user_id' | 'created_at' | 'updated_at'>
-) {
+export async function handleVendorSubmit(vendor: NewVendorData) {
   const formData = new FormData()
   formData.append('name', vendor.name)
   formData.append('category', vendor.category)

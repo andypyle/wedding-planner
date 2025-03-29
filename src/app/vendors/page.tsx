@@ -1,9 +1,11 @@
 'use client'
 
+import { updateVendor } from '@/app/vendors/actions'
 import { AddVendorModal } from '@/components/AddVendorModal'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { EditVendorModal } from '@/components/EditVendorModal'
 import { VendorCard } from '@/components/VendorCard'
+import { NewVendorData } from '@/components/VendorForm/types'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { createClient } from '@/lib/supabase/client'
 import { Vendor } from '@/types/vendor'
@@ -18,6 +20,7 @@ export default function VendorsPage() {
   const [isDeletingPayment, setIsDeletingPayment] = useState(false)
   const [vendorToDelete, setVendorToDelete] = useState<string | null>(null)
   const [isDeletingVendor, setIsDeletingVendor] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const { width } = useWindowSize()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
     // Default to grid on mobile, list on desktop
@@ -124,37 +127,53 @@ export default function VendorsPage() {
     }
   }
 
-  const handleUpdateVendor = async (
-    vendor: Omit<Vendor, 'id' | 'user_id' | 'created_at' | 'updated_at'>
-  ) => {
+  const handleUpdateVendor = async (vendor: NewVendorData) => {
     if (!editingVendor) return
 
     setIsSubmitting(true)
+    setError(null)
+
     try {
-      const { data, error } = await supabase
-        .from('vendors')
-        .update(vendor)
-        .eq('id', editingVendor.id).select(`
-          *,
-          payments (
-            id,
-            amount,
-            date,
-            method,
-            notes
-          )
-        `)
+      const formData = new FormData()
+      formData.append('name', vendor.name)
+      formData.append('category', vendor.category)
+      formData.append('contactName', vendor.contact_name || '')
+      formData.append('contactEmail', vendor.contact_email || '')
+      formData.append('contactPhone', vendor.contact_phone || '')
+      formData.append('price', vendor.price.toString())
+      formData.append('notes', vendor.notes || '')
+      formData.append('status', vendor.status)
 
-      if (error) throw error
+      const result = await updateVendor(editingVendor.id, formData)
 
-      // Update both states but don't close the modal
-      setVendors((prev) =>
-        prev.map((v) => (v.id === editingVendor.id ? data[0] : v))
+      if (result.error) {
+        setError(result.error)
+        return
+      }
+
+      // Calculate new remaining balance
+      const totalPaid = (editingVendor.payments ?? []).reduce(
+        (sum: number, p: { amount: number }) => sum + p.amount,
+        0
       )
-      setEditingVendor(data[0])
-    } catch (error) {
-      console.error('Error updating vendor:', error)
-      throw error
+      const remaining_balance = vendor.price - totalPaid
+
+      setVendors((prevVendors) =>
+        prevVendors.map((v) =>
+          v.id === editingVendor.id
+            ? {
+                ...v,
+                ...vendor,
+                remaining_balance,
+              }
+            : v
+        )
+      )
+
+      setEditingVendor(null)
+    } catch (err) {
+      console.error('Error updating vendor:', err)
+      setError('Failed to update vendor')
     } finally {
       setIsSubmitting(false)
     }
@@ -234,7 +253,7 @@ export default function VendorsPage() {
 
       // Calculate new remaining balance
       const totalPaid = (vendorData.payments ?? []).reduce(
-        (sum, p) => sum + p.amount,
+        (sum: number, p: { amount: number }) => sum + p.amount,
         0
       )
       const remaining_balance = vendorData.price - totalPaid
@@ -450,7 +469,7 @@ export default function VendorsPage() {
               <tbody className="bg-white divide-y divide-slate-200">
                 {vendors.map((vendor) => {
                   const totalPaid = (vendor.payments ?? []).reduce(
-                    (sum, p) => sum + p.amount,
+                    (sum: number, p: { amount: number }) => sum + p.amount,
                     0
                   )
                   const remainingBalance = vendor.price - totalPaid

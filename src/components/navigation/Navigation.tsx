@@ -200,74 +200,13 @@ export default function Navigation({ user }: NavigationProps) {
                   href={item.href}
                   className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                     isActive(item.href)
-                      ? 'border-slate-600 text-slate-900 bg-slate-50'
+                      ? 'bg-slate-50 border-slate-600 text-slate-900'
                       : 'border-transparent text-slate-500 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-700'
                   }`}
                   onClick={() => setIsMenuOpen(false)}>
                   {item.name}
                 </Link>
               ))}
-          </div>
-
-          <div className="pt-4 pb-3 border-t border-slate-200">
-            {user ? (
-              <>
-                <div className="flex items-center px-4">
-                  <div className="flex-shrink-0">
-                    <div className="h-10 w-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center">
-                      {user.email?.charAt(0).toUpperCase() || 'U'}
-                    </div>
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-slate-800">
-                      {user.user_metadata?.partner1_name} &{' '}
-                      {user.user_metadata?.partner2_name}
-                    </div>
-                    <div className="text-sm font-medium text-slate-500">
-                      {user.email}
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-3 space-y-1">
-                  <Link
-                    href="/profile"
-                    className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                    onClick={() => setIsMenuOpen(false)}>
-                    Your Profile
-                  </Link>
-                  <Link
-                    href="/settings"
-                    className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                    onClick={() => setIsMenuOpen(false)}>
-                    Settings
-                  </Link>
-                  <button
-                    type="button"
-                    className="block w-full text-left px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                    onClick={() => {
-                      setIsMenuOpen(false)
-                      handleSignOut()
-                    }}>
-                    Sign out
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="space-y-1">
-                <Link
-                  href="/login"
-                  className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                  onClick={() => setIsMenuOpen(false)}>
-                  Sign in
-                </Link>
-                <Link
-                  href="/signup"
-                  className="block px-4 py-2 text-base font-medium text-slate-500 hover:text-slate-800 hover:bg-slate-100"
-                  onClick={() => setIsMenuOpen(false)}>
-                  Sign up
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 'use client'
 
-import { Modal } from '@/components/Modal/Modal'
+import { Modal } from '@/components/Modal'
 import { VendorForm } from '@/components/VendorForm'
 import { EditVendorModalProps } from './types'
 

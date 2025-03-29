@@ -2,7 +2,7 @@
 
 import { updateGuest } from '@/app/actions/guests'
 import { GuestForm } from '@/components/GuestForm/GuestForm'
-import { Modal } from '@/components/Modal/Modal'
+import { Modal } from '@/components/Modal'
 import { Guest } from '@/types/guest'
 import { useState } from 'react'
 

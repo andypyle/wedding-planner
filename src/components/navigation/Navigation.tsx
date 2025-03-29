@@ -1,11 +1,20 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { User } from '@supabase/supabase-js'
 import { Outfit } from 'next/font/google'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { NavigationItem, NavigationProps } from './types'
+
+interface NavigationItem {
+  name: string
+  href: string
+}
+
+interface NavigationProps {
+  user: User | null
+}
 
 const outfit = Outfit({
   weight: '800',

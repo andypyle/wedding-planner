@@ -1,6 +1,6 @@
 'use client'
 
-import ProfileForm from '@/components/ProfileForm'
+import { ProfileForm } from '@/components/ProfileForm'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'

@@ -163,14 +163,11 @@
 
   .modal {
     @apply fixed inset-0 flex items-start justify-center z-50;
-    min-height: 100vh;
-    min-height: 100dvh;
   }
 
   .modal-content {
-    @apply relative bg-white w-full max-w-3xl mx-4 rounded-xl overflow-y-auto;
+    @apply w-full h-full bg-white shadow-xl;
     max-height: calc(100vh - 2rem);
-    max-height: calc(100dvh - 2rem);
   }
 
   .modal-header {
@@ -204,8 +201,6 @@
   @media (max-width: 1023px) {
     .modal-content {
       @apply fixed inset-0 mx-0 rounded-none;
-      max-height: 100vh;
-      max-height: 100dvh;
     }
   }
 }

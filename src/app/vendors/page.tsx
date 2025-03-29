@@ -1,8 +1,9 @@
 'use client'
 
 import { AddVendorModal } from '@/components/AddVendorModal'
+import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { EditVendorModal } from '@/components/EditVendorModal'
-import { VendorCard } from '@/components/vendors/VendorCard'
+import { VendorCard } from '@/components/VendorCard'
 import { useWindowSize } from '@/hooks/useWindowSize'
 import { createClient } from '@/lib/supabase/client'
 import { Vendor } from '@/types/vendor'
@@ -15,6 +16,8 @@ export default function VendorsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAddingPayment, setIsAddingPayment] = useState(false)
   const [isDeletingPayment, setIsDeletingPayment] = useState(false)
+  const [vendorToDelete, setVendorToDelete] = useState<string | null>(null)
+  const [isDeletingVendor, setIsDeletingVendor] = useState(false)
   const { width } = useWindowSize()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(() => {
     // Default to grid on mobile, list on desktop
@@ -63,21 +66,59 @@ export default function VendorsPage() {
   }
 
   const handleAddVendor = async (
-    vendor: Omit<Vendor, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+    vendor: Omit<
+      Vendor,
+      | 'id'
+      | 'user_id'
+      | 'created_at'
+      | 'updated_at'
+      | 'remaining_balance'
+      | 'payments'
+    >
   ) => {
     setIsSubmitting(true)
     try {
+      // Get the current user's ID
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) throw new Error('No user found')
+
+      // Calculate initial remaining balance
+      const remaining_balance = vendor.price
+
+      // Log the vendor data we're trying to insert
+      const newVendor = {
+        ...vendor,
+        user_id: user.id,
+        remaining_balance,
+      }
+      console.log('Attempting to insert vendor:', newVendor)
+
       const { data, error } = await supabase
         .from('vendors')
-        .insert([vendor])
+        .insert([newVendor])
         .select()
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('No data returned from insert')
+      }
 
       setVendors((prev) => [data[0], ...prev])
       setIsAddModalOpen(false)
     } catch (error) {
-      console.error('Error adding vendor:', error)
+      console.error('Error adding vendor:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        vendor,
+      })
+      throw error
     } finally {
       setIsSubmitting(false)
     }
@@ -93,17 +134,27 @@ export default function VendorsPage() {
       const { data, error } = await supabase
         .from('vendors')
         .update(vendor)
-        .eq('id', editingVendor.id)
-        .select()
+        .eq('id', editingVendor.id).select(`
+          *,
+          payments (
+            id,
+            amount,
+            date,
+            method,
+            notes
+          )
+        `)
 
       if (error) throw error
 
+      // Update both states but don't close the modal
       setVendors((prev) =>
         prev.map((v) => (v.id === editingVendor.id ? data[0] : v))
       )
-      setEditingVendor(null)
+      setEditingVendor(data[0])
     } catch (error) {
       console.error('Error updating vendor:', error)
+      throw error
     } finally {
       setIsSubmitting(false)
     }
@@ -119,24 +170,119 @@ export default function VendorsPage() {
 
     setIsAddingPayment(true)
     try {
-      const { data, error } = await supabase
+      // Get the current user's ID
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) throw new Error('No user found')
+
+      console.log('Adding payment:', {
+        payment,
+        vendor_id: editingVendor.id,
+        user_id: user.id,
+      })
+
+      // First, insert the payment
+      const { data: paymentData, error: paymentError } = await supabase
         .from('payments')
-        .insert([{ ...payment, vendor_id: editingVendor.id }])
+        .insert([
+          {
+            ...payment,
+            vendor_id: editingVendor.id,
+            user_id: user.id,
+          },
+        ])
         .select()
 
-      if (error) throw error
+      if (paymentError) {
+        console.error('Payment insert error:', paymentError)
+        throw paymentError
+      }
 
-      setEditingVendor((prev) =>
-        prev
-          ? {
-              ...prev,
-              payments: [...prev.payments, data[0]],
-              remaining_balance: prev.remaining_balance - payment.amount,
-            }
-          : null
+      if (!paymentData || paymentData.length === 0) {
+        throw new Error('No payment data returned from insert')
+      }
+
+      console.log('Payment added successfully:', paymentData[0])
+
+      // Fetch the updated vendor data with all payments
+      const { data: vendorData, error: vendorError } = await supabase
+        .from('vendors')
+        .select(
+          `
+          *,
+          payments (
+            id,
+            amount,
+            date,
+            method,
+            notes
+          )
+        `
+        )
+        .eq('id', editingVendor.id)
+        .single()
+
+      if (vendorError) {
+        console.error('Error fetching updated vendor:', vendorError)
+        throw vendorError
+      }
+
+      if (!vendorData) {
+        throw new Error('No vendor data returned')
+      }
+
+      // Calculate new remaining balance
+      const totalPaid = (vendorData.payments ?? []).reduce(
+        (sum, p) => sum + p.amount,
+        0
+      )
+      const remaining_balance = vendorData.price - totalPaid
+
+      // Update the vendor with new remaining balance
+      const { data: updatedVendorData, error: updateError } = await supabase
+        .from('vendors')
+        .update({ remaining_balance })
+        .eq('id', editingVendor.id)
+        .select(
+          `
+          *,
+          payments (
+            id,
+            amount,
+            date,
+            method,
+            notes
+          )
+        `
+        )
+        .single()
+
+      if (updateError) {
+        console.error('Error updating vendor balance:', updateError)
+        throw updateError
+      }
+
+      if (!updatedVendorData) {
+        throw new Error('No updated vendor data returned')
+      }
+
+      console.log('Vendor updated successfully:', updatedVendorData)
+
+      // Update both the editing vendor and the vendors list
+      setEditingVendor(updatedVendorData)
+      setVendors((prev) =>
+        prev.map((v) => (v.id === editingVendor.id ? updatedVendorData : v))
       )
     } catch (error) {
-      console.error('Error adding payment:', error)
+      console.error('Error adding payment:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        payment,
+        vendor: editingVendor,
+      })
+      throw error
     } finally {
       setIsAddingPayment(false)
     }
@@ -150,21 +296,39 @@ export default function VendorsPage() {
       const payment = editingVendor.payments.find((p) => p.id === paymentId)
       if (!payment) return
 
-      const { error } = await supabase
+      // First delete the payment
+      const { error: deleteError } = await supabase
         .from('payments')
         .delete()
         .eq('id', paymentId)
 
-      if (error) throw error
+      if (deleteError) throw deleteError
 
-      setEditingVendor((prev) =>
-        prev
-          ? {
-              ...prev,
-              payments: prev.payments.filter((p) => p.id !== paymentId),
-              remaining_balance: prev.remaining_balance + payment.amount,
-            }
-          : null
+      // Calculate new remaining balance
+      const newPayments = editingVendor.payments.filter(
+        (p) => p.id !== paymentId
+      )
+      const totalPaid = newPayments.reduce((sum, p) => sum + p.amount, 0)
+      const remaining_balance = editingVendor.price - totalPaid
+
+      // Update the vendor with new remaining balance
+      const { data: vendorData, error: vendorError } = await supabase
+        .from('vendors')
+        .update({ remaining_balance })
+        .eq('id', editingVendor.id)
+        .select()
+
+      if (vendorError) throw vendorError
+
+      // Update both the editing vendor and the vendors list
+      const updatedVendor = {
+        ...editingVendor,
+        remaining_balance,
+        payments: newPayments,
+      }
+      setEditingVendor(updatedVendor)
+      setVendors((prev) =>
+        prev.map((v) => (v.id === editingVendor.id ? updatedVendor : v))
       )
     } catch (error) {
       console.error('Error deleting payment:', error)
@@ -173,16 +337,26 @@ export default function VendorsPage() {
     }
   }
 
-  const handleDeleteVendor = async (vendorId: string) => {
+  const handleDeleteVendorClick = (vendorId: string) => {
+    setVendorToDelete(vendorId)
+  }
+
+  const handleConfirmDeleteVendor = async () => {
+    if (!vendorToDelete) return
+
+    setIsDeletingVendor(true)
     try {
       const { error } = await supabase
         .from('vendors')
         .delete()
-        .eq('id', vendorId)
+        .eq('id', vendorToDelete)
       if (error) throw error
-      setVendors((prev) => prev.filter((v) => v.id !== vendorId))
+      setVendors((prev) => prev.filter((v) => v.id !== vendorToDelete))
+      setVendorToDelete(null)
     } catch (error) {
       console.error('Error deleting vendor:', error)
+    } finally {
+      setIsDeletingVendor(false)
     }
   }
 
@@ -234,13 +408,13 @@ export default function VendorsPage() {
       </div>
 
       {viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {vendors.map((vendor) => (
             <VendorCard
               key={vendor.id}
               vendor={vendor}
               onEdit={() => setEditingVendor(vendor)}
-              onDelete={() => handleDeleteVendor(vendor.id)}
+              onDelete={() => handleDeleteVendorClick(vendor.id)}
             />
           ))}
         </div>
@@ -275,10 +449,11 @@ export default function VendorsPage() {
               </thead>
               <tbody className="bg-white divide-y divide-slate-200">
                 {vendors.map((vendor) => {
-                  const totalPaid = vendor.payments.reduce(
+                  const totalPaid = (vendor.payments ?? []).reduce(
                     (sum, p) => sum + p.amount,
                     0
                   )
+                  const remainingBalance = vendor.price - totalPaid
                   return (
                     <tr key={vendor.id} className="hover:bg-slate-50">
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -301,7 +476,7 @@ export default function VendorsPage() {
                         ${totalPaid.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
-                        ${vendor.remaining_balance.toLocaleString()}
+                        ${remainingBalance.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200 text-slate-700">
@@ -315,7 +490,7 @@ export default function VendorsPage() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDeleteVendor(vendor.id)}
+                          onClick={() => handleDeleteVendorClick(vendor.id)}
                           className="text-slate-600 hover:text-slate-800">
                           Delete
                         </button>
@@ -329,6 +504,17 @@ export default function VendorsPage() {
         </div>
       )}
 
+      <AddVendorModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddVendor}
+        onAddPayment={handleAddPayment}
+        onDeletePayment={handleDeletePayment}
+        isSubmitting={isSubmitting}
+        isAddingPayment={isAddingPayment}
+        isDeletingPayment={isDeletingPayment}
+      />
+
       <EditVendorModal
         vendor={editingVendor}
         isOpen={!!editingVendor}
@@ -341,15 +527,13 @@ export default function VendorsPage() {
         isDeletingPayment={isDeletingPayment}
       />
 
-      <AddVendorModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSubmit={handleAddVendor}
-        onAddPayment={handleAddPayment}
-        onDeletePayment={handleDeletePayment}
-        isSubmitting={isSubmitting}
-        isAddingPayment={isAddingPayment}
-        isDeletingPayment={isDeletingPayment}
+      <ConfirmDialog
+        isOpen={!!vendorToDelete}
+        onClose={() => setVendorToDelete(null)}
+        onConfirm={handleConfirmDeleteVendor}
+        title="Delete Vendor"
+        message="Are you sure you want to delete this vendor? This will also delete all associated payments and cannot be undone."
+        isLoading={isDeletingVendor}
       />
     </div>
   )

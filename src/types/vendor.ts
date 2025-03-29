@@ -34,11 +34,11 @@ export interface Vendor {
   user_id: string
   name: string
   category: VendorCategory
-  contact_name?: string
-  contact_email?: string
-  contact_phone?: string
+  contact_name: string
+  contact_email: string
+  contact_phone: string
   price: number
-  notes?: string
+  notes: string
   status: VendorStatus
   remaining_balance: number
   payments: Payment[]

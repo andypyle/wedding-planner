@@ -1,5 +1,6 @@
 'use client'
 
+import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { createClient } from '@/lib/supabase/client'
 import { Guest } from '@/types/guest'
 import { useEffect, useState } from 'react'
@@ -11,6 +12,8 @@ export default function GuestsPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingGuest, setEditingGuest] = useState<Guest | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [guestToDelete, setGuestToDelete] = useState<string | null>(null)
+  const [isDeletingGuest, setIsDeletingGuest] = useState(false)
 
   const fetchGuests = async () => {
     const supabase = createClient()
@@ -43,18 +46,33 @@ export default function GuestsPage() {
     setEditingGuest(guest)
   }
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this guest?')) return
+  const handleDeleteClick = (id: string) => {
+    setGuestToDelete(id)
+  }
 
-    const supabase = createClient()
-    const { error } = await supabase.from('guests').delete().eq('id', id)
+  const handleConfirmDelete = async () => {
+    if (!guestToDelete) return
 
-    if (error) {
+    setIsDeletingGuest(true)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase
+        .from('guests')
+        .delete()
+        .eq('id', guestToDelete)
+
+      if (error) {
+        console.error('Error deleting guest:', error)
+        return
+      }
+
+      fetchGuests()
+      setGuestToDelete(null)
+    } catch (error) {
       console.error('Error deleting guest:', error)
-      return
+    } finally {
+      setIsDeletingGuest(false)
     }
-
-    fetchGuests()
   }
 
   const GuestCard = ({ guest }: { guest: Guest }) => {
@@ -73,7 +91,7 @@ export default function GuestsPage() {
               )}
             </div>
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200 text-slate-800 mt-1">
-              {guest.group}
+              {guest.group_name}
             </span>
           </div>
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-200 text-slate-800">
@@ -107,7 +125,7 @@ export default function GuestsPage() {
             Edit
           </button>
           <button
-            onClick={() => handleDelete(guest.id)}
+            onClick={() => handleDeleteClick(guest.id)}
             className="text-sm text-red-600 hover:text-red-900">
             Delete
           </button>
@@ -221,7 +239,7 @@ export default function GuestsPage() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm text-slate-800">
-                            {guest.group}
+                            {guest.group_name}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -236,7 +254,7 @@ export default function GuestsPage() {
                             Edit
                           </button>
                           <button
-                            onClick={() => handleDelete(guest.id)}
+                            onClick={() => handleDeleteClick(guest.id)}
                             className="text-slate-600 hover:text-slate-800">
                             Delete
                           </button>
@@ -265,6 +283,15 @@ export default function GuestsPage() {
           onSuccess={fetchGuests}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={!!guestToDelete}
+        onClose={() => setGuestToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Guest"
+        message="Are you sure you want to delete this guest? This action cannot be undone."
+        isLoading={isDeletingGuest}
+      />
     </div>
   )
 }

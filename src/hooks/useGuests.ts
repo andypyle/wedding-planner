@@ -1,5 +1,6 @@
 'use client'
 
+import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { Guest, GuestStatus } from '../types/guest'
 
@@ -8,13 +9,37 @@ const STORAGE_KEY = 'wedding-guests'
 
 export function useGuests() {
   const [guests, setGuests] = useState<Guest[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  const supabase = createClient()
 
   useEffect(() => {
-    const savedGuests = localStorage.getItem(STORAGE_KEY)
-    if (savedGuests) {
-      setGuests(JSON.parse(savedGuests))
+    async function fetchGuests() {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+        if (!user) throw new Error('No user found')
+
+        const { data, error } = await supabase
+          .from('guests')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
+
+        if (error) throw error
+        setGuests(data || [])
+      } catch (err) {
+        setError(
+          err instanceof Error ? err : new Error('Failed to fetch guests')
+        )
+      } finally {
+        setLoading(false)
+      }
     }
-  }, [])
+
+    fetchGuests()
+  }, [supabase])
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(guests))
@@ -43,7 +68,7 @@ export function useGuests() {
   }
 
   const getGuestsByGroup = (groupName: string) => {
-    return guests.filter((guest) => guest.group === groupName)
+    return guests.filter((guest) => guest.group_name === groupName)
   }
 
   const getTotalGuests = () => {
@@ -59,6 +84,8 @@ export function useGuests() {
 
   return {
     guests,
+    loading,
+    error,
     addGuest,
     updateGuest,
     deleteGuest,

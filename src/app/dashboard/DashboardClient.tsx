@@ -1,8 +1,9 @@
 'use client'
 
-import { BudgetOverview } from '@/components/dashboard/BudgetOverview'
-import { ChecklistStats } from '@/components/dashboard/ChecklistStats'
-import { GuestOverview } from '@/components/dashboard/GuestOverview'
+import { BudgetOverview } from '@/components/BudgetOverview'
+import { Card, CardBody, CardHeader } from '@/components/Card/Card'
+import { ChecklistStats } from '@/components/ChecklistStats'
+import { GuestOverview } from '@/components/GuestOverview'
 import { ChecklistItem } from '@/types/checklist'
 import { Guest } from '@/types/guest'
 import { Vendor } from '@/types/vendor'
@@ -88,19 +89,23 @@ export default function DashboardClient({
       </div>
 
       {/* Checklist Progress */}
-      <div className="bg-slate-100 rounded-lg shadow-sm p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-medium text-slate-800">
-            Checklist Progress
-          </h2>
-          <Link
-            href="/checklist"
-            className="text-sm text-slate-600 hover:text-slate-900">
-            View All Tasks →
-          </Link>
-        </div>
-        <ChecklistStats items={checklistItems} />
-      </div>
+      <Card variant="bordered" theme="slate">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-medium text-slate-800">
+              Checklist Progress
+            </h2>
+            <Link
+              href="/checklist"
+              className="text-sm text-slate-600 hover:text-slate-900">
+              View All Tasks →
+            </Link>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <ChecklistStats items={checklistItems} />
+        </CardBody>
+      </Card>
     </div>
   )
 }

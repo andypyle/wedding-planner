@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 import { Payment, Vendor, VendorCategory } from '../types/vendor'
 
 // Helper function to create a unique ID
@@ -114,8 +115,39 @@ const initialVendors: Vendor[] = [
   },
 ]
 
-export const useVendors = () => {
-  const [vendors, setVendors] = useState<Vendor[]>(initialVendors)
+export function useVendors() {
+  const [vendors, setVendors] = useState<Vendor[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+  const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchVendors() {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser()
+        if (!user) throw new Error('No user found')
+
+        const { data, error } = await supabase
+          .from('vendors')
+          .select('*, payments(*)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: true })
+
+        if (error) throw error
+        setVendors(data || [])
+      } catch (err) {
+        setError(
+          err instanceof Error ? err : new Error('Failed to fetch vendors')
+        )
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchVendors()
+  }, [supabase])
 
   const addVendor = (
     vendor: Omit<Vendor, 'id' | 'user_id' | 'created_at' | 'updated_at'>
@@ -222,6 +254,8 @@ export const useVendors = () => {
 
   return {
     vendors,
+    loading,
+    error,
     addVendor,
     updateVendor,
     deleteVendor,

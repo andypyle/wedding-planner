@@ -1,80 +1,141 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import DashboardClient from './DashboardClient'
+'use client'
 
-export default async function DashboardPage() {
-  const supabase = await createClient()
+import { BudgetOverview } from '@/components/BudgetOverview'
+import { Card, CardBody } from '@/components/Card/Card'
+import { ChecklistStats } from '@/components/ChecklistStats'
+import { GuestOverview } from '@/components/GuestOverview'
+import { useChecklist } from '@/hooks/useChecklist'
+import { useGuests } from '@/hooks/useGuests'
+import { useVendors } from '@/hooks/useVendors'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-  // Check if user is authenticated
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) {
-    redirect('/login')
+export default function DashboardPage() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [weddingDate, setWeddingDate] = useState<Date | null>(null)
+  const supabase = createClient()
+  const { vendors } = useVendors()
+  const { guests, loading: guestsLoading } = useGuests()
+  const { items, isLoading: checklistLoading } = useChecklist()
+
+  useEffect(() => {
+    console.log('Guests:', guests)
+    console.log('Checklist items:', items)
+  }, [guests, items])
+
+  useEffect(() => {
+    async function checkAuth() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/login')
+        return
+      }
+
+      // Get wedding date from profiles
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('wedding_date')
+        .eq('id', user.id)
+        .single()
+
+      if (profileData?.wedding_date) {
+        setWeddingDate(new Date(profileData.wedding_date))
+      }
+
+      setLoading(false)
+    }
+
+    checkAuth()
+  }, [supabase, router])
+
+  if (loading || guestsLoading || checklistLoading) {
+    return <div>Loading...</div>
   }
 
-  try {
-    const [vendorsResponse, guestsResponse, checklistResponse] =
-      await Promise.all([
-        supabase
-          .from('vendors')
-          .select('*, payments(*)')
-          .eq('user_id', user.id),
-        supabase.from('guests').select('*').eq('user_id', user.id),
-        supabase.from('checklist_items').select('*').eq('user_id', user.id),
-      ])
+  // Calculate days until wedding
+  const daysUntilWedding = weddingDate
+    ? Math.ceil(
+        (weddingDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      )
+    : null
 
-    if (vendorsResponse.error) {
-      throw vendorsResponse.error
-    }
+  // Calculate vendor stats
+  const totalVendors = vendors.length
+  const bookedVendors = vendors.filter(
+    (v) =>
+      v.status === 'Booked' ||
+      v.status === 'Deposit Paid' ||
+      v.status === 'Paid in Full'
+  ).length
+  const pendingVendors = vendors.filter(
+    (v) => v.status === 'Contacted' || v.status === 'Meeting Scheduled'
+  ).length
 
-    if (guestsResponse.error) {
-      throw guestsResponse.error
-    }
-
-    if (checklistResponse.error) {
-      throw checklistResponse.error
-    }
-
-    const vendors = vendorsResponse.data
-    const guests = guestsResponse.data
-    const checklistItems = checklistResponse.data
-
-    // Get wedding date from profiles
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('wedding_date')
-      .eq('id', user.id)
-      .single()
-
-    // If profile error is not found, we can continue with null wedding date
-    if (profileError && profileError.code !== 'PGRST116') {
-      throw profileError
-    }
-
-    const weddingDate = profileData?.wedding_date
-      ? new Date(profileData.wedding_date)
-      : null
-
-    return (
-      <DashboardClient
-        vendors={vendors}
-        guests={guests}
-        checklistItems={checklistItems}
-        weddingDate={weddingDate}
-      />
-    )
-  } catch (error) {
-    console.error('Error loading dashboard:', error)
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-semibold text-slate-800 mb-2">
-          Error Loading Dashboard
-        </h2>
-        <p className="text-slate-600">
-          There was an error loading your dashboard. Please try again later.
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-semibold text-slate-800">Dashboard</h1>
+        <p className="mt-1 text-sm text-slate-600">
+          Welcome back! Here's an overview of your wedding planning progress.
         </p>
       </div>
-    )
-  }
+
+      {/* Quick Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card variant="bordered" theme="slate">
+          <CardBody>
+            <h3 className="text-sm font-medium text-slate-600">
+              Days Until Wedding
+            </h3>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">
+              {daysUntilWedding ?? 'Not set'}
+            </p>
+          </CardBody>
+        </Card>
+        <Card variant="bordered" theme="slate">
+          <CardBody>
+            <h3 className="text-sm font-medium text-slate-600">
+              Total Vendors
+            </h3>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">
+              {totalVendors}
+            </p>
+          </CardBody>
+        </Card>
+        <Card variant="bordered" theme="slate">
+          <CardBody>
+            <h3 className="text-sm font-medium text-slate-600">
+              Booked Vendors
+            </h3>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">
+              {bookedVendors}
+            </p>
+          </CardBody>
+        </Card>
+        <Card variant="bordered" theme="slate">
+          <CardBody>
+            <h3 className="text-sm font-medium text-slate-600">
+              Pending Vendors
+            </h3>
+            <p className="mt-2 text-3xl font-semibold text-slate-900">
+              {pendingVendors}
+            </p>
+          </CardBody>
+        </Card>
+      </div>
+
+      {/* Budget and Guest Overview */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <BudgetOverview vendors={vendors} />
+        <GuestOverview guests={guests} />
+      </div>
+
+      {/* Checklist Progress */}
+      <ChecklistStats items={items} />
+    </div>
+  )
 }

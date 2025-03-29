@@ -120,7 +120,7 @@ export default function GuestsClient({ initialGuests }: GuestsClientProps) {
       guest.first_name.toLowerCase().includes(searchLower) ||
       guest.last_name.toLowerCase().includes(searchLower) ||
       guest.email.toLowerCase().includes(searchLower) ||
-      guest.group.toLowerCase().includes(searchLower)
+      guest.group_name.toLowerCase().includes(searchLower)
     )
   })
 
@@ -245,7 +245,7 @@ export default function GuestsClient({ initialGuests }: GuestsClientProps) {
               <div className="mt-4 space-y-2">
                 <p className="text-sm text-earth-600">{guest.email}</p>
                 <p className="text-sm text-earth-600">{guest.phone}</p>
-                <p className="text-sm text-earth-600">{guest.group}</p>
+                <p className="text-sm text-earth-600">{guest.group_name}</p>
                 {guest.dietary_restrictions && (
                   <p className="text-sm text-earth-600">
                     Dietary: {guest.dietary_restrictions}
@@ -290,7 +290,9 @@ export default function GuestsClient({ initialGuests }: GuestsClientProps) {
                     <div className="text-sm text-earth-500">{guest.phone}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-earth-900">{guest.group}</div>
+                    <div className="text-sm text-earth-900">
+                      {guest.group_name}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span

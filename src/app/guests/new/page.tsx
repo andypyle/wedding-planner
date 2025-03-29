@@ -16,15 +16,26 @@ export default function NewGuestPage() {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const guestData: Omit<Guest, 'id' | 'created_at' | 'updated_at'> = {
+    const guestData: Omit<
+      Guest,
+      'id' | 'user_id' | 'created_at' | 'updated_at'
+    > = {
       first_name: formData.get('first_name') as string,
       last_name: formData.get('last_name') as string,
       email: formData.get('email') as string,
       phone: formData.get('phone') as string,
-      group: formData.get('group') as string,
+      group_name: formData.get('group_name') as string,
       rsvp_status: 'pending',
       dietary_restrictions: formData.get('dietary_restrictions') as string,
       plus_one: formData.get('plus_one') === 'true',
+      address: '',
+      city: '',
+      state: '',
+      zip: '',
+      meal_choice: '',
+      plus_one_name: '',
+      plus_one_meal_choice: '',
+      notes: '',
     }
 
     try {
@@ -39,45 +50,37 @@ export default function NewGuestPage() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-earth-800">Add New Guest</h1>
-        <p className="mt-1 text-sm text-earth-600">
-          Add a new guest to your wedding list
-        </p>
-      </div>
+    <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <h1 className="text-2xl font-semibold text-earth-800 mb-6">Add Guest</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label
+            htmlFor="first_name"
+            className="block text-sm font-medium text-earth-700">
+            First Name
+          </label>
+          <input
+            type="text"
+            id="first_name"
+            name="first_name"
+            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            required
+          />
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="first_name"
-              className="block text-sm font-medium text-earth-700">
-              First Name
-            </label>
-            <input
-              type="text"
-              id="first_name"
-              name="first_name"
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              required
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="last_name"
-              className="block text-sm font-medium text-earth-700">
-              Last Name
-            </label>
-            <input
-              type="text"
-              id="last_name"
-              name="last_name"
-              className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              required
-            />
-          </div>
+        <div>
+          <label
+            htmlFor="last_name"
+            className="block text-sm font-medium text-earth-700">
+            Last Name
+          </label>
+          <input
+            type="text"
+            id="last_name"
+            name="last_name"
+            className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
+            required
+          />
         </div>
 
         <div>
@@ -112,14 +115,14 @@ export default function NewGuestPage() {
 
         <div>
           <label
-            htmlFor="group"
+            htmlFor="group_name"
             className="block text-sm font-medium text-earth-700">
             Group
           </label>
           <input
             type="text"
-            id="group"
-            name="group"
+            id="group_name"
+            name="group_name"
             className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
             required
           />
@@ -157,17 +160,11 @@ export default function NewGuestPage() {
 
         {error && <div className="text-sm text-red-600">{error}</div>}
 
-        <div className="flex justify-end space-x-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="btn btn-secondary">
-            Cancel
-          </button>
+        <div className="flex justify-end">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn btn-primary">
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
             {isSubmitting ? 'Adding...' : 'Add Guest'}
           </button>
         </div>

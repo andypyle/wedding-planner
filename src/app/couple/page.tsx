@@ -1,5 +1,8 @@
 'use client'
 
+import { Button } from '@/components/Button/Button'
+import { Form, FormGroup, FormInput } from '@/components/Form/Form'
+import { Grid, GridItem } from '@/components/Grid/Grid'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -272,149 +275,76 @@ export default function CouplePage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <Form onSubmit={handleSubmit} className="space-y-6">
         <div className="card">
           <h2 className="text-lg font-medium text-earth-800 mb-4">Partner 1</h2>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="partner1-name"
-                className="block text-sm font-medium text-earth-700">
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="partner1-name"
-                name="name"
-                value={couple.partner1.name}
-                onChange={handlePartner1Change}
-                className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                required
-              />
-              {formErrors.partner1?.name && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formErrors.partner1.name}
-                </p>
-              )}
-            </div>
+          <Grid cols={1} sm={2} gap={4}>
+            <GridItem>
+              <FormGroup label="Full Name" htmlFor="partner1-name" required>
+                <FormInput
+                  type="text"
+                  id="partner1-name"
+                  name="name"
+                  value={couple.partner1.name}
+                  onChange={handlePartner1Change}
+                  required
+                  error={formErrors.partner1?.name}
+                />
+              </FormGroup>
+            </GridItem>
 
-            <div>
-              <label
-                htmlFor="partner1-email"
-                className="block text-sm font-medium text-earth-700">
-                Email
-              </label>
-              <input
-                type="email"
-                id="partner1-email"
-                name="email"
-                value={userEmail}
-                disabled
-                className="mt-1 block w-full rounded-md border-earth-300 bg-earth-50 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="partner1-phone"
-                className="block text-sm font-medium text-earth-700">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="partner1-phone"
-                name="phone"
-                value={couple.partner1.phone}
-                onChange={handlePartner1Change}
-                className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              />
-              {formErrors.partner1?.phone && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formErrors.partner1.phone}
-                </p>
-              )}
-            </div>
-          </div>
+            <GridItem>
+              <FormGroup label="Email" htmlFor="partner1-email">
+                <FormInput
+                  type="email"
+                  id="partner1-email"
+                  name="email"
+                  value={userEmail}
+                  disabled
+                />
+              </FormGroup>
+            </GridItem>
+          </Grid>
         </div>
 
         <div className="card">
           <h2 className="text-lg font-medium text-earth-800 mb-4">Partner 2</h2>
-          <div className="space-y-4">
-            <div>
-              <label
-                htmlFor="partner2-name"
-                className="block text-sm font-medium text-earth-700">
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="partner2-name"
-                name="name"
-                value={couple.partner2.name}
-                onChange={handlePartner2Change}
-                className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-                required
-              />
-              {formErrors.partner2?.name && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formErrors.partner2.name}
-                </p>
-              )}
-            </div>
+          <Grid cols={1} sm={2} gap={4}>
+            <GridItem>
+              <FormGroup label="Full Name" htmlFor="partner2-name" required>
+                <FormInput
+                  type="text"
+                  id="partner2-name"
+                  name="name"
+                  value={couple.partner2.name}
+                  onChange={handlePartner2Change}
+                  required
+                  error={formErrors.partner2?.name}
+                />
+              </FormGroup>
+            </GridItem>
 
-            <div>
-              <label
-                htmlFor="partner2-email"
-                className="block text-sm font-medium text-earth-700">
-                Email
-              </label>
-              <input
-                type="email"
-                id="partner2-email"
-                name="email"
-                value={couple.partner2.email}
-                onChange={handlePartner2Change}
-                className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              />
-              {formErrors.partner2?.email && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formErrors.partner2.email}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="partner2-phone"
-                className="block text-sm font-medium text-earth-700">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="partner2-phone"
-                name="phone"
-                value={couple.partner2.phone}
-                onChange={handlePartner2Change}
-                className="mt-1 block w-full rounded-md border-earth-300 shadow-sm focus:border-primary focus:ring-primary sm:text-sm"
-              />
-              {formErrors.partner2?.phone && (
-                <p className="mt-1 text-sm text-red-600">
-                  {formErrors.partner2.phone}
-                </p>
-              )}
-            </div>
-          </div>
+            <GridItem>
+              <FormGroup label="Email" htmlFor="partner2-email">
+                <FormInput
+                  type="email"
+                  id="partner2-email"
+                  name="email"
+                  value={couple.partner2.email}
+                  onChange={handlePartner2Change}
+                  error={formErrors.partner2?.email}
+                />
+              </FormGroup>
+            </GridItem>
+          </Grid>
         </div>
 
         <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary w-full sm:w-auto">
-            {loading ? 'Saving...' : 'Save Changes'}
-          </button>
+          <Button type="submit" loading={loading}>
+            Save Changes
+          </Button>
         </div>
-      </form>
+      </Form>
     </div>
   )
 }

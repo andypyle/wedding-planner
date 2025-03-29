@@ -2,9 +2,9 @@
 
 import { createGuest } from '@/app/actions/guests'
 import { GuestForm } from '@/components/GuestForm/GuestForm'
+import { Modal } from '@/components/modal'
 import { Guest } from '@/types/guest'
 import { useState } from 'react'
-import { Modal } from '../../../components/modal/Modal'
 
 interface AddGuestModalProps {
   isOpen: boolean

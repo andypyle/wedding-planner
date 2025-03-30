@@ -8,6 +8,7 @@ export interface Profile {
   wedding_location: string | null
   wedding_venue: string | null
   total_budget: number
+  avatar_url: string | null
   created_at: string
   updated_at: string
 }

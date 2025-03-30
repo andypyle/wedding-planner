@@ -13,12 +13,13 @@ interface Profile {
   wedding_location: string | null
   wedding_venue: string | null
   total_budget: number
+  avatar_url: string | null
   created_at: string
   updated_at: string
 }
 
 export default function ProfilePage() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
@@ -29,23 +30,30 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const { data: userData } = await supabase.auth.getUser()
         if (!userData.user) {
           router.push('/login')
           return
         }
 
-        const { data: profileData } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', userData.user.id)
           .single()
+
+        if (profileError) {
+          throw profileError
+        }
 
         setUser(userData.user)
         setProfile(profileData)
       } catch (err) {
         console.error('Error fetching profile:', err)
         setError('Failed to load profile')
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -73,7 +81,7 @@ export default function ProfilePage() {
       }
 
       setSuccess(true)
-      router.refresh()
+      // router.refresh()
     } catch (err) {
       console.error('Error updating profile:', err)
       setError('Failed to update profile. Please try again.')
@@ -82,10 +90,40 @@ export default function ProfilePage() {
     }
   }
 
-  if (!profile || !user) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-600"></div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="text-slate-600 hover:text-slate-800">
+            Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (!profile || !user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <p className="text-slate-600 mb-4">Profile not found</p>
+          <button
+            onClick={() => router.push('/signup')}
+            className="text-slate-600 hover:text-slate-800">
+            Create a profile
+          </button>
+        </div>
       </div>
     )
   }

@@ -3,7 +3,12 @@
 import { useEffect, useState } from 'react'
 import { ModalProps } from './types'
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export default function Modal({
+  isOpen,
+  onClose,
+  title,
+  children,
+}: ModalProps) {
   const [isAnimating, setIsAnimating] = useState(false)
 
   const handleEscape = (e: KeyboardEvent) => {

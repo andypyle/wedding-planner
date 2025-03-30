@@ -7,12 +7,12 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-interface NavigationItem {
+export interface NavigationItem {
   name: string
   href: string
 }
 
-interface NavigationProps {
+export interface NavigationProps {
   user: User | null
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import Navigation from '@/components/navigation/Navigation'
+import { Navigation } from '@/components/Navigation'
 import { ClientLayoutProps } from './types'
 
 export function ClientLayout({ children }: ClientLayoutProps) {

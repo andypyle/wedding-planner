@@ -274,7 +274,11 @@ export function VendorForm({
                   className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
                   <div>
                     <div className="font-medium text-slate-900">
-                      ${payment.amount.toLocaleString()}
+                      $
+                      {payment.amount.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
                     </div>
                     <div className="text-sm text-slate-500">
                       {new Date(payment.date).toLocaleDateString()} -{' '}
@@ -302,7 +306,11 @@ export function VendorForm({
                 Remaining Balance
               </div>
               <div className="text-lg font-semibold text-slate-900">
-                ${calculateRemainingBalance().toLocaleString()}
+                $
+                {calculateRemainingBalance().toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
               </div>
             </div>
           </div>
@@ -311,10 +319,9 @@ export function VendorForm({
             <Grid cols={1} sm={2} gap={4}>
               <GridItem>
                 <FormGroup label="Amount" htmlFor="payment_amount" required>
-                  <FormInput
+                  <FormPriceInput
                     id="payment_amount"
                     name="amount"
-                    type="number"
                     value={newPayment.amount}
                     onChange={handlePaymentChange}
                     required
@@ -374,7 +381,8 @@ export function VendorForm({
                 type="submit"
                 loading={isAddingPayment}
                 variant="success"
-                size="sm">
+                size="sm"
+                disabled={!newPayment.amount}>
                 Add Payment
               </Button>
             </div>

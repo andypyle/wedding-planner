@@ -1,5 +1,3 @@
-import { User } from '@supabase/supabase-js'
-
 export interface Profile {
   id: string
   partner1_name: string
@@ -14,8 +12,15 @@ export interface Profile {
 }
 
 export interface ProfileFormProps {
-  profile: Profile
-  user: User
-  onSubmit: (formData: any) => Promise<void>
-  loading: boolean
+  profile: {
+    partner1_name: string | null
+    partner2_name: string | null
+    wedding_date: string | null
+    wedding_location: string | null
+    wedding_venue: string | null
+    total_budget: number | null
+    avatar_url: string | null
+  }
+  user: any
+  onSubmit: (formData: any, noRefresh?: boolean) => Promise<void>
 }

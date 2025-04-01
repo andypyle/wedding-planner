@@ -1,6 +1,7 @@
 'use client'
 
 import { ProfileForm } from '@/components/ProfileForm'
+import { Toast } from '@/components/Toast/Toast'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -60,8 +61,7 @@ export default function ProfilePage() {
     fetchData()
   }, [router])
 
-  const handleSubmit = async (formData: any) => {
-    setLoading(true)
+  const handleSubmit = async (formData: any, noRefresh?: boolean) => {
     setError(null)
     setSuccess(false)
 
@@ -80,13 +80,11 @@ export default function ProfilePage() {
         throw updateError
       }
 
+      setProfile((prev) => (prev ? { ...prev, ...formData } : null))
       setSuccess(true)
-      // router.refresh()
     } catch (err) {
       console.error('Error updating profile:', err)
       setError('Failed to update profile. Please try again.')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -102,7 +100,7 @@ export default function ProfilePage() {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
+          <Toast type="error" message={error} />
           <button
             onClick={() => window.location.reload()}
             className="text-slate-600 hover:text-slate-800">
@@ -140,36 +138,20 @@ export default function ProfilePage() {
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          {error}
-        </div>
+        <Toast type="error" message={error} onClose={() => setError(null)} />
       )}
-
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-          Profile updated successfully!
-        </div>
+        <Toast
+          type="success"
+          message="Profile updated successfully!"
+          onClose={() => setSuccess(false)}
+        />
       )}
 
       <div className="bg-white shadow-sm rounded-lg border border-slate-200">
         <div className="px-4 py-5 sm:p-6">
-          <ProfileForm
-            profile={profile}
-            user={user}
-            onSubmit={handleSubmit}
-            loading={loading}
-          />
+          <ProfileForm profile={profile} user={user} onSubmit={handleSubmit} />
         </div>
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => handleSubmit(profile)}
-          disabled={loading}
-          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-70">
-          {loading ? 'Saving...' : 'Save Changes'}
-        </button>
       </div>
     </div>
   )

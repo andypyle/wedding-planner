@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ToastProps } from './types'
 
 export function Toast({
@@ -10,9 +10,15 @@ export function Toast({
   duration = 5000,
   className = '',
 }: ToastProps) {
+  const [isVisible, setIsVisible] = useState(true)
+
   useEffect(() => {
     if (onClose && duration > 0) {
-      const timer = setTimeout(onClose, duration)
+      const timer = setTimeout(() => {
+        setIsVisible(false)
+        // Wait for animation to complete before calling onClose
+        setTimeout(onClose, 300)
+      }, duration)
       return () => clearTimeout(timer)
     }
   }, [onClose, duration])
@@ -88,37 +94,45 @@ export function Toast({
 
   return (
     <div
-      className={`flex items-center p-4 rounded-lg border ${typeClasses[type]} ${className}`}
-      role="alert"
-      aria-live="polite">
-      <div className="flex-shrink-0">{icons[type]}</div>
-      <div className="ml-3">
-        <p className="text-sm font-medium">{message}</p>
-      </div>
-      {onClose && (
-        <div className="ml-auto pl-3">
-          <div className="-mx-1.5 -my-1.5">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
-              aria-label="Dismiss">
-              <span className="sr-only">Dismiss</span>
-              <svg
-                className="h-5 w-5"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor">
-                <path
-                  fillRule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-50 max-w-md w-full mx-4 transition-all duration-300 ease-in-out ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}>
+      <div
+        className={`flex items-center p-4 rounded-lg border shadow-lg ${typeClasses[type]} ${className}`}
+        role="alert"
+        aria-live="polite">
+        <div className="flex-shrink-0">{icons[type]}</div>
+        <div className="ml-3">
+          <p className="text-sm font-medium">{message}</p>
         </div>
-      )}
+        {onClose && (
+          <div className="ml-auto pl-3">
+            <div className="-mx-1.5 -my-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsVisible(false)
+                  setTimeout(onClose, 300)
+                }}
+                className="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-50 focus:ring-green-600"
+                aria-label="Dismiss">
+                <span className="sr-only">Dismiss</span>
+                <svg
+                  className="h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor">
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

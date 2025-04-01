@@ -1,67 +1,31 @@
 'use client'
 
 import { useAuth } from '@/hooks/useAuth'
+import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/login', '/signup', '/auth/callback']
+const publicRoutes = ['/login', '/signup', '/forgot-password']
 
+// Define navigation items
 const navigation = [
   {
     name: 'Dashboard',
     href: '/dashboard',
     icon: (
       <svg
-        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
         fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
         stroke="currentColor"
-        className="size-6 h-6 w-6">
+        viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: 'Timeline',
-    href: '/timeline',
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="size-6 h-6 w-6">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-        />
-      </svg>
-    ),
-  },
-  {
-    name: 'Guests',
-    href: '/guests',
-    icon: (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
-        stroke="currentColor"
-        className="size-6 h-6 w-6">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
+          strokeWidth={2}
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
         />
       </svg>
     ),
@@ -71,16 +35,51 @@ const navigation = [
     href: '/vendors',
     icon: (
       <svg
-        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
         fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
         stroke="currentColor"
-        className="size-6 h-6 w-6">
+        viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615A2.993 2.993 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.015a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72l1.189-1.19A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72M6.75 18h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .414.336.75.75.75Z"
+          strokeWidth={2}
+          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+        />
+      </svg>
+    ),
+  },
+  {
+    name: 'Guests',
+    href: '/guests',
+    icon: (
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+        />
+      </svg>
+    ),
+  },
+  {
+    name: 'Timeline',
+    href: '/timeline',
+    icon: (
+      <svg
+        className="h-5 w-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24">
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
         />
       </svg>
     ),
@@ -90,57 +89,95 @@ const navigation = [
     href: '/checklist',
     icon: (
       <svg
-        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
         fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth="1.5"
         stroke="currentColor"
-        className="size-6 h-6 w-6">
+        viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+          strokeWidth={2}
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg>
     ),
   },
 ]
 
-// Hook to handle window resize
-function useWindowSize() {
-  const [windowSize, setWindowSize] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 0,
-  })
-
-  useEffect(() => {
-    function handleResize() {
-      setWindowSize({
-        width: window.innerWidth,
-      })
-    }
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener('resize', handleResize)
-      handleResize()
-    }
-
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('resize', handleResize)
-      }
-    }
-  }, [])
-
-  return windowSize
-}
-
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, signOut, loading } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { width } = useWindowSize()
+  const [profile, setProfile] = useState<any>(null)
+  const [width, setWidth] = useState(0)
   const isDesktop = width >= 1024
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user) {
+        const supabase = createClient()
+        console.log('Fetching profile for user:', user.id)
+
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (error) {
+          console.error('Error fetching profile:', error)
+          if (error.code === 'PGRST116') {
+            console.log('No profile found for user. Creating one...')
+            // Create a new profile if one doesn't exist
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert([
+                {
+                  id: user.id,
+                  email: user.email,
+                  partner1_name:
+                    user.user_metadata?.partner1_name || 'Partner 1',
+                  partner2_name:
+                    user.user_metadata?.partner2_name || 'Partner 2',
+                  avatar_url: user.user_metadata?.avatar_url,
+                },
+              ])
+              .select()
+              .single()
+
+            if (createError) {
+              console.error('Error creating profile:', createError)
+              return
+            }
+
+            console.log('Created new profile:', newProfile)
+            setProfile(newProfile)
+            return
+          }
+          return
+        }
+
+        console.log('Found profile:', data)
+        setProfile(data)
+      }
+    }
+
+    fetchProfile()
+  }, [user])
 
   useEffect(() => {
     if (!loading) {
@@ -197,97 +234,143 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24">
-          {isMobileMenuOpen ? (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          ) : (
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          )}
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d={
+              isMobileMenuOpen
+                ? 'M6 18L18 6M6 6l12 12'
+                : 'M4 6h16M4 12h16M4 18h16'
+            }
+          />
         </svg>
       </button>
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 w-80 bg-white shadow-lg z-[90] sidebar ${
-          isMobileMenuOpen ? 'open' : ''
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
-        <div className="flex h-full flex-col">
-          {/* User Profile Section */}
-          <div className="border-b border-slate-200 p-4">
+        <div className="flex flex-col h-full">
+          {/* Logo */}
+          <div className="flex-shrink-0 p-4 border-b">
+            <Link href="/dashboard" className="flex items-center space-x-2">
+              <span className="text-xl font-bold text-slate-800">
+                Wedding Planner
+              </span>
+            </Link>
+          </div>
+
+          {/* Profile Section */}
+          <div className="flex-shrink-0 p-4 border-b">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center text-xs tracking-tighter">
-                {user.user_metadata?.partner1_name?.charAt(0) &&
-                user.user_metadata?.partner2_name?.charAt(0)
-                  ? `${user.user_metadata.partner1_name.charAt(
-                      0
-                    )} & ${user.user_metadata.partner2_name.charAt(0)}`
-                  : user.user_metadata?.partner1_name?.charAt(0) ||
-                    user.user_metadata?.partner2_name?.charAt(0) ||
-                    'U'}
+              <div className="relative h-12 w-12 rounded-full overflow-hidden bg-slate-100">
+                {profile?.avatar_url ? (
+                  <Image
+                    src={profile.avatar_url}
+                    alt="Profile"
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-slate-400">
+                    {user.email?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                )}
               </div>
-              <div className="flex flex-col">
+              <div>
                 <p className="text-sm font-medium text-slate-900">
-                  {user.user_metadata?.partner1_name}
+                  {profile?.partner1_name || 'Partner 1'}
                 </p>
-                <p className="text-sm font-medium text-slate-900">
-                  {user.user_metadata?.partner2_name}
+                <p className="text-sm text-slate-500">
+                  {profile?.partner2_name || 'Partner 2'}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 space-y-1 p-4">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`group flex items-center rounded-lg px-3 py-2 text-base font-medium transition-colors ${
-                    isActive
-                      ? 'bg-slate-100 text-slate-900'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}>
-                  <span className="mr-3">{item.icon}</span>
-                  {item.name}
-                </Link>
-              )
-            })}
+          <nav className="flex-1 p-4 space-y-1">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  pathname === item.href
+                    ? 'bg-slate-100 text-slate-900'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}>
+                {item.icon}
+                <span>{item.name}</span>
+              </Link>
+            ))}
           </nav>
 
           {/* User Menu */}
-          <div className="border-t border-slate-200 p-4">
+          <div className="flex-shrink-0 p-4 border-t">
             <div className="space-y-1">
               <Link
                 href="/profile"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
-                Your Profile
+                className="flex items-center space-x-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+                <span>Your Profile</span>
               </Link>
               <Link
                 href="/settings"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
-                Settings
+                className="flex items-center space-x-3 px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span>Settings</span>
               </Link>
               <button
                 onClick={() => {
                   setIsMobileMenuOpen(false)
                   signOut()
                 }}
-                className="block w-full text-left px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
-                Sign out
+                className="flex items-center space-x-3 w-full px-3 py-2 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-lg">
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Sign out</span>
               </button>
             </div>
           </div>
@@ -295,8 +378,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-0 lg:pl-80 min-h-screen h-screen flex flex-col">
-        <main className="p-6 main-content flex-1">{children}</main>
+      <div className="lg:pl-64">
+        <main className="p-4 sm:p-8">{children}</main>
       </div>
     </div>
   )

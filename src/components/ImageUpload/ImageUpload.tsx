@@ -11,6 +11,7 @@ interface ImageUploadProps {
   bucket: string
   folder: string
   maxSize?: number // in MB
+  disabled?: boolean
 }
 
 export function ImageUpload({
@@ -19,22 +20,14 @@ export function ImageUpload({
   bucket = 'avatars',
   folder = 'profile',
   maxSize = 2 * 1024 * 1024, // 2MB
+  disabled = false,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
+  const [delayedUploading, setDelayedUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl)
   const [userId, setUserId] = useState<string | null>(null)
   const supabase = createClient()
-
-  // Update previewUrl when currentImageUrl changes
-  useEffect(() => {
-    console.log('currentImageUrl:', currentImageUrl)
-    console.log('previewUrl:', previewUrl)
-
-    if (currentImageUrl !== previewUrl) {
-      setPreviewUrl(previewUrl)
-    }
-  }, [currentImageUrl, previewUrl])
 
   useEffect(() => {
     const getUser = async () => {
@@ -51,6 +44,11 @@ export function ImageUpload({
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (disabled) {
+      e.target.value = ''
+      return
+    }
 
     if (!userId) {
       setError('You must be logged in to upload an image')
@@ -71,18 +69,22 @@ export function ImageUpload({
 
     try {
       setUploading(true)
+      setDelayedUploading(true)
       setError(null)
 
       // Generate unique filename and use userId as folder
+      const fileExt = file.name.split('.').pop()
       const fileName = `${Date.now()}-${file.name}`
       const filePath = `${folder}/${userId}/${fileName}`
+
+      console.log('Uploading to path:', filePath)
 
       // Upload the file with upsert enabled
       const { error: uploadError } = await supabase.storage
         .from(bucket)
         .upload(filePath, file, {
           cacheControl: '3600',
-          upsert: false,
+          upsert: true,
         })
 
       if (uploadError) {
@@ -90,13 +92,16 @@ export function ImageUpload({
         throw uploadError
       }
 
-      onUploadComplete(filePath)
       setPreviewUrl(filePath)
+      onUploadComplete(filePath)
     } catch (err) {
       console.error('Error uploading image:', err)
       setError('Failed to upload image. Please try again.')
     } finally {
       setUploading(false)
+      setTimeout(() => {
+        setDelayedUploading(false)
+      }, 2000)
     }
   }
 
@@ -111,9 +116,9 @@ export function ImageUpload({
               fill
               sizes="80px"
               className={cn(
-                'object-contain w-full h-full rounded-full transition-[filter] duration-300 ease-in-out blur-0',
+                'object-contain rounded-full w-full h-full transition-[filter] duration-500',
                 {
-                  'blur-sm': uploading,
+                  'blur-md grayscale': delayedUploading,
                 }
               )}
               style={{ padding: '4px' }}
@@ -127,7 +132,9 @@ export function ImageUpload({
         <div>
           <label
             htmlFor="profile-photo"
-            className="inline-flex items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 disabled:opacity-50">
+            className={`inline-flex items-center px-4 py-2 border border-slate-300 shadow-sm text-sm font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 ${
+              disabled ? 'opacity-50 cursor-not-allowed' : ''
+            }`}>
             {uploading ? 'Uploading...' : 'Change photo'}
           </label>
           <input
@@ -136,7 +143,7 @@ export function ImageUpload({
             accept="image/*"
             onChange={handleFileChange}
             className="hidden"
-            disabled={uploading}
+            disabled={disabled || uploading}
           />
         </div>
       </div>

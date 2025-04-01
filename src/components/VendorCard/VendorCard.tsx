@@ -5,7 +5,7 @@ import { ProgressBar } from '@/components/ProgressBar'
 import { VendorCardProps } from './types'
 
 export function VendorCard({ vendor, onEdit, onDelete }: VendorCardProps) {
-  const totalPaid = vendor.payments.reduce((sum, p) => sum + p.amount, 0)
+  const totalPaid = vendor.payments?.reduce((sum, p) => sum + p.amount, 0) || 0
   const progress = (totalPaid / vendor.price) * 100
   const remainingBalance = vendor.price - totalPaid
 
@@ -34,7 +34,7 @@ export function VendorCard({ vendor, onEdit, onDelete }: VendorCardProps) {
                 </span>
               </div>
               <div className="mt-2">
-                <ProgressBar value={progress} />
+                <ProgressBar value={progress} max={100} />
               </div>
               <div className="mt-2 flex justify-between text-sm">
                 <span className="text-slate-600">Paid</span>
